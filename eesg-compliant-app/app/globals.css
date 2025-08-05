@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+:root {
+  /* Base colors */
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  /* ESG Environmental Colors */
+  --environmental-primary: #2E7D32;
+  --environmental-secondary: #4CAF50;
+  --environmental-accent: #81C784;
+  --environmental-light: #C8E6C9;
+  --environmental-dark: #1B5E20;
+  
+  /* ESG Social Colors */
+  --social-primary: #FF6B35;
+  --social-secondary: #FF8A65;
+  --social-accent: #FFCC02;
+  --social-light: #FFE0B2;
+  --social-dark: #E65100;
+  
+  /* ESG Governance Colors */
+  --governance-primary: #1976D2;
+  --governance-secondary: #42A5F5;
+  --governance-accent: #90CAF9;
+  --governance-light: #E3F2FD;
+  --governance-dark: #0D47A1;
+  
+  /* Neutral Colors */
+  --neutral-50: #FAFAFA;
+  --neutral-100: #F5F5F5;
+  --neutral-200: #EEEEEE;
+  --neutral-300: #E0E0E0;
+  --neutral-400: #BDBDBD;
+  --neutral-500: #9E9E9E;
+  --neutral-600: #757575;
+  --neutral-700: #616161;
+  --neutral-800: #424242;
+  --neutral-900: #212121;
+  
+  /* Semantic Colors */
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --error: #F44336;
+  --info: #2196F3;
+  
+  /* ESG Status Colors */
+  --esg-excellent: #2E7D32;
+  --esg-good: #4CAF50;
+  --esg-average: #FF9800;
+  --esg-poor: #F44336;
+  --esg-improving: #2196F3;
+}
+
+@theme inline {
+  /* Base colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* Environmental colors */
+  --color-environmental-primary: var(--environmental-primary);
+  --color-environmental-secondary: var(--environmental-secondary);
+  --color-environmental-accent: var(--environmental-accent);
+  --color-environmental-light: var(--environmental-light);
+  --color-environmental-dark: var(--environmental-dark);
+  
+  /* Social colors */
+  --color-social-primary: var(--social-primary);
+  --color-social-secondary: var(--social-secondary);
+  --color-social-accent: var(--social-accent);
+  --color-social-light: var(--social-light);
+  --color-social-dark: var(--social-dark);
+  
+  /* Governance colors */
+  --color-governance-primary: var(--governance-primary);
+  --color-governance-secondary: var(--governance-secondary);
+  --color-governance-accent: var(--governance-accent);
+  --color-governance-light: var(--governance-light);
+  --color-governance-dark: var(--governance-dark);
+  
+  /* Neutral colors */
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  
+  /* Semantic colors */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  
+  /* ESG status colors */
+  --color-esg-excellent: var(--esg-excellent);
+  --color-esg-good: var(--esg-good);
+  --color-esg-average: var(--esg-average);
+  --color-esg-poor: var(--esg-poor);
+  --color-esg-improving: var(--esg-improving);
+  
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    
+    /* Dark mode adjustments for better contrast */
+    --environmental-primary: #4CAF50;
+    --environmental-secondary: #66BB6A;
+    --environmental-accent: #81C784;
+    --environmental-light: #A5D6A7;
+    --environmental-dark: #2E7D32;
+    
+    --social-primary: #FF7043;
+    --social-secondary: #FF8A65;
+    --social-accent: #FFB74D;
+    --social-light: #FFCC80;
+    --social-dark: #FF5722;
+    
+    --governance-primary: #42A5F5;
+    --governance-secondary: #64B5F6;
+    --governance-accent: #90CAF9;
+    --governance-light: #BBDEFB;
+    --governance-dark: #1976D2;
+    
+    /* Dark mode neutral colors */
+    --neutral-50: #212121;
+    --neutral-100: #424242;
+    --neutral-200: #616161;
+    --neutral-300: #757575;
+    --neutral-400: #9E9E9E;
+    --neutral-500: #BDBDBD;
+    --neutral-600: #E0E0E0;
+    --neutral-700: #EEEEEE;
+    --neutral-800: #F5F5F5;
+    --neutral-900: #FAFAFA;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom Animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-slow-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-delay {
+  0% { opacity: 0; transform: translateY(20px); }
+  50% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-delay-2 {
+  0% { opacity: 0; transform: translateY(20px); }
+  75% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animate-spin-slow-reverse {
+  animation: spin-slow-reverse 12s linear infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fade-in-delay 1.5s ease-out;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fade-in-delay-2 2s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ESG-specific utility classes */
+.esg-environmental {
+  color: var(--environmental-primary);
+}
+
+.esg-social {
+  color: var(--social-primary);
+}
+
+.esg-governance {
+  color: var(--governance-primary);
+}
+
+.esg-status-excellent {
+  color: var(--esg-excellent);
+}
+
+.esg-status-good {
+  color: var(--esg-good);
+}
+
+.esg-status-average {
+  color: var(--esg-average);
+}
+
+.esg-status-poor {
+  color: var(--esg-poor);
+}
+
+.esg-status-improving {
+  color: var(--esg-improving);
+}
