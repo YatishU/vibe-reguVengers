@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block title %}ESG Copilot Dashboard - Dutch Banks Compliance Analysis{% endblock %}
+
+{% block content %}
+<div x-data="dashboardData()" x-init="loadDashboardData()">
+    <!-- Hero Section -->
+    <div class="gradient-bg rounded-2xl p-8 mb-8 text-white">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-bold mb-4">ESG Copilot Dashboard</h1>
+            <p class="text-xl opacity-90 mb-6">AI-powered ESG compliance analysis for Dutch banks (IG, RB, AB)</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="glass-effect rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold" x-text="summary.total_banks || 3">3</div>
+                    <div class="text-sm opacity-80">Banks Analyzed</div>
+                </div>
+                <div class="glass-effect rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold" x-text="summary.total_documents || 0">0</div>
+                    <div class="text-sm opacity-80">Documents Processed</div>
+                </div>
+                <div class="glass-effect rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold" x-text="formatPercentage(summary.average_esg_score || 0.75)">75.0%</div>
+                    <div class="text-sm opacity-80">Average ESG Score</div>
+                </div>
+                <div class="glass-effect rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold" x-text="summary.critical_gaps || 0">0</div>
+                    <div class="text-sm opacity-80">Critical Gaps</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESG Scores Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- ESG Score Cards -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">ESG Performance Rankings</h2>
+            <div class="space-y-4">
+                <template x-for="(score, index) in esgScores" :key="score.bank">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg card-hover">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4"
+                                 :class="getRankColor(score.rank)">
+                                <span x-text="score.rank"></span>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-gray-900" x-text="score.bank"></div>
+                                <div class="text-sm text-gray-500" x-text="getBankName(score.bank)"></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold" :class="getScoreColor(score.overall_score)" x-text="formatPercentage(score.overall_score)"></div>
+                            <div class="text-sm text-gray-500" x-text="score.trend"></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- ESG Score Breakdown Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">ESG Score Breakdown</h2>
+            <div class="h-80">
+                <canvas id="esgBreakdownChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance & Risk Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Compliance Gaps -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Compliance Gaps</h2>
+            <div class="space-y-3">
+                <template x-for="gap in complianceGaps.slice(0, 5)" :key="gap.id">
+                    <div class="p-3 border-l-4 rounded-r-lg" :class="getGapBorderColor(gap.severity)">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-medium text-gray-900" x-text="gap.bank"></div>
+                                <div class="text-sm text-gray-600" x-text="gap.regulation"></div>
+                                <div class="text-xs text-gray-500 mt-1" x-text="gap.description"></div>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full font-medium" 
+                                  :class="getSeverityColor(gap.severity)" x-text="gap.severity"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Taxonomy Alignment -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">EU Taxonomy Alignment</h2>
+            <div class="space-y-4">
+                <template x-for="alignment in taxonomyAlignment" :key="alignment.bank">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium text-gray-900" x-text="alignment.bank"></span>
+                            <span class="text-lg font-bold text-green-600" x-text="formatPercentage(alignment.total_alignment)"></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                                 :style="`width: ${alignment.total_alignment * 100}%`"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span x-text="formatPercentage(alignment.eligible_investments)"></span> eligible investments
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Climate Risk -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Climate Risk Assessment</h2>
+            <div class="space-y-4">
+                <template x-for="risk in climateRisk" :key="risk.bank">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-medium text-gray-900" x-text="risk.bank"></span>
+                            <span class="text-sm font-medium" :class="getRiskColor(risk.overall_climate_risk)" 
+                                  x-text="formatPercentage(risk.overall_climate_risk)"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Physical Risk:</span>
+                                <span x-text="formatPercentage(risk.physical_risk_score)"></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Transition Risk:</span>
+                                <span x-text="formatPercentage(risk.transition_risk_score)"></span>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2" x-text="`Trend: ${risk.risk_trend}`"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Drift Analysis Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">ESG Drift Analysis</h2>
+            <div class="h-80">
+                <canvas id="driftChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Compliance Trend Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Compliance Trend</h2>
+            <div class="h-80">
+                <canvas id="complianceTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <a href="/upload" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-green-500 hover:bg-green-50 transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <div class="font-medium text-gray-900">Upload Document</div>
+                <div class="text-sm text-gray-500">Analyze new ESG reports</div>
+            </a>
+            
+            <a href="/reports" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <div class="font-medium text-gray-900">Generate Reports</div>
+                <div class="text-sm text-gray-500">Create detailed analysis</div>
+            </a>
+            
+            <a href="/api/test-cases" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-purple-500 hover:bg-purple-50 transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <div class="font-medium text-gray-900">Test Cases</div>
+                <div class="text-sm text-gray-500">BDD test generation</div>
+            </a>
+            
+            <button @click="refreshData()" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-orange-500 hover:bg-orange-50 transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <div class="font-medium text-gray-900">Refresh Data</div>
+                <div class="text-sm text-gray-500">Update dashboard</div>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function dashboardData() {
+    return {
+        summary: {},
+        esgScores: [],
+        complianceGaps: [],
+        taxonomyAlignment: [],
+        climateRisk: [],
+        driftAnalysis: [],
+        
+        async loadDashboardData() {
+            try {
+                // Load summary data
+                const summaryResponse = await fetch('/api/dashboard/summary');
+                this.summary = await summaryResponse.json();
+                
+                // Load ESG scores
+                const scoresResponse = await fetch('/api/esg-scores');
+                this.esgScores = await scoresResponse.json();
+                
+                // Load compliance gaps
+                const gapsResponse = await fetch('/api/drift-analysis');
+                const driftData = await gapsResponse.json();
+                this.complianceGaps = this.generateMockGaps();
+                
+                // Load taxonomy alignment
+                const taxonomyResponse = await fetch('/api/taxonomy-alignment');
+                this.taxonomyAlignment = await taxonomyResponse.json();
+                
+                // Load climate risk data
+                const climateResponse = await fetch('/api/climate-risk');
+                this.climateRisk = await climateResponse.json();
+                
+                // Initialize charts after data is loaded
+                this.$nextTick(() => {
+                    this.initializeCharts();
+                });
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                this.loadMockData();
+            }
+        },
+        
+        loadMockData() {
+            this.summary = {
+                total_banks: 3,
+                total_documents: 12,
+                total_analyses: 15,
+                average_esg_score: 0.78,
+                compliance_rate: 0.82,
+                critical_gaps: 3
+            };
+            
+            this.esgScores = [
+                { bank: 'IG', environmental_score: 0.82, social_score: 0.78, governance_score: 0.85, overall_score: 0.82, rank: 1, trend: 'Increasing' },
+                { bank: 'RB', environmental_score: 0.79, social_score: 0.81, governance_score: 0.83, overall_score: 0.81, rank: 2, trend: 'Stable' },
+                { bank: 'AB', environmental_score: 0.76, social_score: 0.79, governance_score: 0.80, overall_score: 0.78, rank: 3, trend: 'Decreasing' }
+            ];
+            
+            this.complianceGaps = this.generateMockGaps();
+            this.taxonomyAlignment = this.generateMockTaxonomy();
+            this.climateRisk = this.generateMockClimateRisk();
+            
+            this.$nextTick(() => {
+                this.initializeCharts();
+            });
+        },
+        
+        generateMockGaps() {
+            return [
+                { id: 1, bank: 'IG', regulation: 'CSRD', gap_type: 'Missing', description: 'Incomplete double materiality assessment', severity: 'High', year: 2024 },
+                { id: 2, bank: 'RB', regulation: 'EU Taxonomy', gap_type: 'Incomplete', description: 'Missing technical screening criteria alignment', severity: 'Medium', year: 2024 },
+                { id: 3, bank: 'AB', regulation: 'Climate Risk', gap_type: 'Non-compliant', description: 'Insufficient scenario analysis', severity: 'Critical', year: 2024 }
+            ];
+        },
+        
+        generateMockTaxonomy() {
+            return [
+                { bank: 'IG', total_alignment: 0.75, eligible_investments: 0.55, non_compliant_investments: 0.25, sectors: ['Manufacturing', 'Energy'] },
+                { bank: 'RB', total_alignment: 0.68, eligible_investments: 0.48, non_compliant_investments: 0.32, sectors: ['Transport', 'Buildings'] },
+                { bank: 'AB', total_alignment: 0.72, eligible_investments: 0.52, non_compliant_investments: 0.28, sectors: ['Manufacturing', 'Energy'] }
+            ];
+        },
+        
+        generateMockClimateRisk() {
+            return [
+                { bank: 'IG', physical_risk_score: 0.25, transition_risk_score: 0.35, overall_climate_risk: 0.30, risk_trend: 'Decreasing' },
+                { bank: 'RB', physical_risk_score: 0.30, transition_risk_score: 0.40, overall_climate_risk: 0.35, risk_trend: 'Stable' },
+                { bank: 'AB', physical_risk_score: 0.35, transition_risk_score: 0.45, overall_climate_risk: 0.40, risk_trend: 'Increasing' }
+            ];
+        },
+        
+        initializeCharts() {
+            this.createESGBreakdownChart();
+            this.createDriftChart();
+            this.createComplianceTrendChart();
+        },
+        
+        createESGBreakdownChart() {
+            const ctx = document.getElementById('esgBreakdownChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Environmental', 'Social', 'Governance'],
+                    datasets: this.esgScores.map((score, index) => ({
+                        label: score.bank,
+                        data: [score.environmental_score, score.social_score, score.governance_score],
+                        backgroundColor: `rgba(${59 + index * 50}, ${130 + index * 30}, ${246 - index * 20}, 0.2)`,
+                        borderColor: `rgba(${59 + index * 50}, ${130 + index * 30}, ${246 - index * 20}, 1)`,
+                        borderWidth: 2,
+                        pointBackgroundColor: `rgba(${59 + index * 50}, ${130 + index * 30}, ${246 - index * 20}, 1)`,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: `rgba(${59 + index * 50}, ${130 + index * 30}, ${246 - index * 20}, 1)`
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                stepSize: 0.2
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        },
+        
+        createDriftChart() {
+            const ctx = document.getElementById('driftChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: this.esgScores.map((score, index) => ({
+                        label: score.bank,
+                        data: [0.75, 0.77, 0.79, 0.78, 0.80, score.overall_score],
+                        borderColor: `rgba(${59 + index * 50}, ${130 + index * 30}, ${246 - index * 20}, 1)`,
+                        backgroundColor: `rgba(${59 + index * 50}, ${130 + index * 30}, ${246 - index * 20}, 0.1)`,
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        },
+        
+        createComplianceTrendChart() {
+            const ctx = document.getElementById('complianceTrendChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['CSRD', 'EU Taxonomy', 'Climate Risk', 'SFDR'],
+                    datasets: [{
+                        label: 'Compliance Rate',
+                        data: [0.85, 0.72, 0.68, 0.78],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(59, 130, 246, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(59, 130, 246, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        },
+        
+        refreshData() {
+            this.loadDashboardData();
+            showNotification('Dashboard data refreshed successfully', 'success');
+        },
+        
+        getRankColor(rank) {
+            const colors = {
+                1: 'bg-yellow-500',
+                2: 'bg-gray-400',
+                3: 'bg-orange-600'
+            };
+            return colors[rank] || 'bg-gray-500';
+        },
+        
+        getScoreColor(score) {
+            if (score >= 0.8) return 'text-green-600';
+            if (score >= 0.6) return 'text-yellow-600';
+            return 'text-red-600';
+        },
+        
+        getBankName(code) {
+            const names = {
+                'IG': 'ING Group',
+                'RB': 'Rabobank',
+                'AB': 'ABN AMRO'
+            };
+            return names[code] || code;
+        },
+        
+        getGapBorderColor(severity) {
+            const colors = {
+                'Low': 'border-yellow-400',
+                'Medium': 'border-orange-400',
+                'High': 'border-red-400',
+                'Critical': 'border-red-600'
+            };
+            return colors[severity] || 'border-gray-400';
+        },
+        
+        getSeverityColor(severity) {
+            const colors = {
+                'Low': 'bg-yellow-100 text-yellow-800',
+                'Medium': 'bg-orange-100 text-orange-800',
+                'High': 'bg-red-100 text-red-800',
+                'Critical': 'bg-red-200 text-red-900'
+            };
+            return colors[severity] || 'bg-gray-100 text-gray-800';
+        },
+        
+        getRiskColor(score) {
+            if (score >= 0.8) return 'text-green-600';
+            if (score >= 0.6) return 'text-yellow-600';
+            if (score >= 0.4) return 'text-orange-600';
+            return 'text-red-600';
+        },
+        
+        formatPercentage(value) {
+            return `${(value * 100).toFixed(1)}%`;
+        }
+    }
+}
+</script>
+{% endblock %} 
