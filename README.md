@@ -1,6 +1,6 @@
-# 🌍 ESG Copilot - Dutch Banks Compliance Analysis
+# 🌍 ESG Copilot with RAG - Dutch Banks Compliance Analysis
 
-**AI-powered ESG compliance analysis for Dutch banks (IG, RB, AB)**
+**AI-powered ESG compliance analysis for Dutch banks (IG, RB, AB) with Retrieval-Augmented Generation (RAG)**
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
@@ -8,10 +8,18 @@
 
 ## 🚀 Overview
 
-ESG Copilot is a comprehensive AI-powered application designed to automate ESG compliance analysis for Dutch banks. The system analyzes ESG-related documents including CSRD reports, EU Taxonomy alignments, and Climate Risk assessments to provide actionable insights and ensure regulatory compliance.
+ESG Copilot with RAG is a comprehensive AI-powered application designed to automate ESG compliance analysis for Dutch banks. The system uses **Retrieval-Augmented Generation (RAG)** to provide the most accurate and up-to-date analysis by combining:
+
+- **Real-time Knowledge Base**: Continuously updated ESG regulations, guidelines, and best practices
+- **Vector Search**: Semantic search across extensive ESG knowledge base
+- **Enhanced AI Analysis**: Context-aware analysis using latest regulatory information
+- **Automatic Updates**: Background updates from regulatory sources, news, and research
+
+The system analyzes ESG-related documents including CSRD reports, EU Taxonomy alignments, and Climate Risk assessments to provide actionable insights and ensure regulatory compliance with the latest requirements.
 
 ### 🎯 Key Features
 
+- **🧠 RAG-Enhanced Analysis**: Retrieval-Augmented Generation for accurate, up-to-date analysis
 - **📊 AI-Powered Document Analysis**: Advanced NLP analysis of ESG documents using GPT-4
 - **🏦 Multi-Bank Support**: Analysis for ING Group (IG), Rabobank (RB), and ABN AMRO (AB)
 - **📈 Real-time Dashboard**: Beautiful visualizations with Chart.js and Tailwind CSS
@@ -19,6 +27,9 @@ ESG Copilot is a comprehensive AI-powered application designed to automate ESG c
 - **📋 BDD Test Generation**: Azure Test Plan compatible test case generation
 - **🔄 ESG Drift Detection**: Track changes in sustainability performance over time
 - **📱 Responsive Design**: Modern, accessible UI that works on all devices
+- **🔄 Auto-Updating Knowledge Base**: Continuous updates from regulatory sources
+- **🔍 Semantic Search**: Advanced vector search across ESG knowledge base
+- **📊 Industry Benchmarks**: Compare with industry standards and best practices
 
 ## 🏗️ Architecture
 
@@ -30,7 +41,7 @@ ESG Copilot is a comprehensive AI-powered application designed to automate ESG c
 | **Backend** | Python (FastAPI), LangChain |
 | **AI** | Azure OpenAI / HuggingFace Transformers |
 | **Parsing** | PyMuPDF, PDF.js |
-| **Storage** | PostgreSQL + Vector DB (Pinecone/Weaviate) |
+| **Storage** | PostgreSQL + ChromaDB Vector Store |
 | **Security** | OAuth2, JWT, Azure AD |
 | **Deployment** | Azure App Services / Docker |
 | **Monitoring** | Sentry, Prometheus, Grafana |
@@ -46,8 +57,15 @@ ESG Copilot is a comprehensive AI-powered application designed to automate ESG c
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Templates     │    │   PostgreSQL    │    │   Vector DB     │
-│   (Jinja2)      │    │   Database      │    │   (Pinecone)    │
+│   Templates     │    │   PostgreSQL    │    │   RAG Services  │
+│   (Jinja2)      │    │   Database      │    │   (ChromaDB)    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   RAG Dashboard │    │   Knowledge     │    │   Auto-Updates  │
+│   (Enhanced UI) │    │   Manager       │    │   (Background)  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -134,7 +152,16 @@ The application uses PostgreSQL with the following tables:
 
 ## 🎯 Usage
 
-### 1. Dashboard Overview
+### 1. RAG Dashboard
+
+The RAG dashboard provides:
+- **Knowledge Base Statistics**: Overview of ESG knowledge base content
+- **Real-time Search**: Semantic search across ESG regulations and best practices
+- **RAG Analysis Demo**: Interactive demo of enhanced analysis capabilities
+- **Knowledge Management**: Tools for managing and updating the knowledge base
+- **Auto-update Status**: Monitor background knowledge base updates
+
+### 2. Dashboard Overview
 
 The main dashboard provides:
 - **ESG Performance Rankings**: Compare banks across environmental, social, and governance dimensions
@@ -143,31 +170,37 @@ The main dashboard provides:
 - **Climate Risk Assessment**: Monitor climate-related risks
 - **Drift Analysis**: Track changes over time
 
-### 2. Document Upload
+### 3. Document Upload
 
 1. Navigate to the Upload page
 2. Select the target bank (IG, RB, AB)
 3. Choose document type (CSRD, EU Taxonomy, Climate Risk)
 4. Upload PDF document (max 50MB)
-5. Configure analysis options
+5. Choose analysis type:
+   - **Standard Analysis**: Traditional AI analysis
+   - **RAG-Enhanced Analysis**: Enhanced with latest regulatory knowledge (recommended)
 6. Submit for AI analysis
 
-### 3. Analysis Results
+### 4. Analysis Results
 
-The AI analysis provides:
-- **CSRD Compliance**: Gap analysis against Article 19a requirements
-- **EU Taxonomy Alignment**: Sector-specific alignment percentages
-- **Climate Risk Metrics**: TCFD-aligned risk assessments
+The RAG-enhanced AI analysis provides:
+- **CSRD Compliance**: Gap analysis against latest Article 19a requirements
+- **EU Taxonomy Alignment**: Sector-specific alignment percentages with current criteria
+- **Climate Risk Metrics**: TCFD-aligned risk assessments with latest guidelines
 - **ESG Scoring**: Weighted environmental, social, and governance scores
-- **Recommendations**: Actionable improvement suggestions
+- **Enhanced Recommendations**: Actionable suggestions based on latest best practices
+- **Regulatory Context**: References to specific regulations and guidelines used
+- **Industry Benchmarks**: Comparison with industry standards
+- **Knowledge Sources**: Transparency about information sources used
 
-### 4. Report Generation
+### 5. Report Generation
 
 Generate comprehensive reports including:
 - Executive summaries
-- Detailed compliance analysis
-- Risk assessments
-- Strategic recommendations
+- Detailed compliance analysis with regulatory context
+- Risk assessments using latest guidelines
+- Strategic recommendations based on best practices
+- Industry benchmark comparisons
 - BDD test cases for Azure Test Plan
 
 ## 🔧 Development
@@ -266,6 +299,14 @@ mypy app/
 | `/api/drift-analysis` | GET | Get ESG drift analysis |
 | `/reports/{bank}` | GET | Generate bank-specific report |
 | `/api/test-cases` | GET | Generate BDD test cases |
+| `/rag-dashboard` | GET | RAG dashboard interface |
+| `/api/rag/knowledge-base/stats` | GET | Get knowledge base statistics |
+| `/api/rag/search` | GET | Search ESG knowledge base |
+| `/api/rag/latest-regulations` | GET | Get latest regulatory updates |
+| `/api/rag/analyze-with-context` | POST | Perform RAG-enhanced analysis |
+| `/api/rag/regulatory-insights/{bank}/{doc_type}` | GET | Get regulatory insights |
+| `/api/knowledge/status` | GET | Get knowledge base update status |
+| `/api/knowledge/force-update` | POST | Force knowledge base update |
 
 ### Example API Usage
 
@@ -276,15 +317,56 @@ import requests
 response = requests.get('http://localhost:3000/api/esg-scores')
 esg_scores = response.json()
 
-# Upload document
+# Upload document with RAG enhancement
 files = {'file': open('document.pdf', 'rb')}
 data = {
     'bank': 'IG',
     'document_type': 'CSRD',
-    'year': 2024
+    'year': 2024,
+    'use_rag': True  # Enable RAG enhancement
 }
 response = requests.post('http://localhost:3000/upload-document', files=files, data=data)
+
+# Search ESG knowledge base
+response = requests.get('http://localhost:3000/api/rag/search', params={
+    'query': 'CSRD compliance requirements',
+    'category': 'CSRD'
+})
+search_results = response.json()
+
+# Get latest regulatory insights
+response = requests.get('http://localhost:3000/api/rag/regulatory-insights/IG/CSRD')
+insights = response.json()
+
+# Perform RAG-enhanced analysis
+response = requests.post('http://localhost:3000/api/rag/analyze-with-context', json={
+    'content': 'Sample ESG document content...',
+    'bank': 'IG',
+    'document_type': 'CSRD',
+    'year': 2024
+})
+analysis = response.json()
 ```
+
+## 🧠 RAG Benefits
+
+### Enhanced Accuracy
+- **Up-to-date Analysis**: Always uses the latest regulatory requirements and guidelines
+- **Context-Aware**: Provides analysis based on relevant regulatory context
+- **Source Transparency**: Shows which regulations and guidelines were used
+- **Industry Alignment**: Compares with current industry best practices
+
+### Real-time Knowledge
+- **Automatic Updates**: Background updates from regulatory sources
+- **Latest Regulations**: CSRD, EU Taxonomy, SFDR, and TCFD updates
+- **News Integration**: Latest ESG news and insights
+- **Research Integration**: Best practices from UN PRI, SASB, and other organizations
+
+### Improved Compliance
+- **Regulatory Tracking**: Monitors changes in ESG regulations
+- **Gap Identification**: Identifies compliance gaps against current requirements
+- **Recommendation Quality**: Provides actionable recommendations based on latest standards
+- **Risk Assessment**: Enhanced risk assessment using current guidelines
 
 ## 🔒 Security
 

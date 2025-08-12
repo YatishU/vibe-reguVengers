@@ -1,0 +1,91 @@
+TCFD Recommendations for Climate-Related Financial Disclosures
+
+GOVERNANCE
+Disclose the organization's governance around climate-related risks and opportunities:
+1. Board oversight of climate-related risks and opportunities
+2. Management's role in assessing and managing climate-related risks and opportunities
+
+STRATEGY
+Disclose the actual and potential impacts of climate-related risks and opportunities on the organization's businesses, strategy, and financial planning:
+1. Climate-related risks and opportunities identified over short, medium, and long term
+2. Impact of climate-related risks and opportunities on businesses, strategy, and financial planning
+3. Resilience of organization's strategy to climate-related risks and opportunities
+
+RISK MANAGEMENT
+Disclose how the organization identifies, assesses, and manages climate-related risks:
+1. Processes for identifying and assessing climate-related risks
+2. Processes for managing climate-related risks
+3. Integration of climate-related risks into overall risk management
+
+METRICS AND TARGETS
+Disclose the metrics and targets used to assess and manage climate-related risks and opportunities:
+1. Metrics used to assess climate-related risks and opportunities
+2. Scope 1, Scope 2, and Scope 3 greenhouse gas emissions
+3. Targets used to manage climate-related risks and opportunities
+
+SCENARIO ANALYSIS
+Organizations should use scenario analysis to assess the resilience of their strategy:
+- 2°C scenario (orderly transition)
+- 4°C scenario (business as usual)
+- Disorderly transition scenarios
+- Physical risk scenarios
+
+DISCLOSURE PRINCIPLES
+1. Represent relevant information fairly, accurately, and completely
+2. Provide clear, balanced, and understandable information
+3. Present information in a consistent manner over time
+4. Disclose information on a timely basis
+5. Present information in a way that enables stakeholders to understand the impact
+
+CLIMATE-RELATED RISKS
+Physical Risks:
+- Acute: Extreme weather events, natural disasters
+- Chronic: Gradual climate changes, temperature increases
+
+Transition Risks:
+- Policy: Regulatory changes, carbon pricing
+- Legal: Climate litigation, liability claims
+- Technology: Clean technology adoption
+- Market: Changing consumer preferences
+- Reputation: Stakeholder expectations
+
+CLIMATE-RELATED OPPORTUNITIES
+Resource Efficiency:
+- Energy efficiency improvements
+- Water efficiency enhancements
+- Waste reduction and recycling
+
+Energy Source:
+- Renewable energy adoption
+- Low-carbon energy sources
+- Energy storage solutions
+
+Products and Services:
+- Low-carbon products and services
+- Climate adaptation products
+- Sustainable finance products
+
+Markets:
+- Access to new markets
+- Enhanced reputation
+- Competitive advantages
+
+Resilience:
+- Climate-resilient operations
+- Adaptation strategies
+- Business model innovation
+
+IMPLEMENTATION GUIDANCE
+Phase 1: Governance and strategy development
+Phase 2: Risk management integration
+Phase 3: Metrics and targets establishment
+Phase 4: Scenario analysis implementation
+Phase 5: Full disclosure implementation
+
+BENEFITS OF TCFD IMPLEMENTATION
+- Enhanced risk management
+- Improved strategic planning
+- Better stakeholder communication
+- Increased investor confidence
+- Regulatory compliance
+- Competitive advantage 

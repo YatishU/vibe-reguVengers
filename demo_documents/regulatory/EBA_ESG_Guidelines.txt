@@ -1,0 +1,113 @@
+EBA Guidelines on ESG Risk Management
+
+REGULATORY FRAMEWORK
+The European Banking Authority (EBA) provides guidelines for:
+- ESG risk management and supervision
+- Climate risk stress testing
+- ESG disclosure requirements
+- Sustainable finance integration
+
+ESG RISK MANAGEMENT PRINCIPLES
+1. Governance and Strategy
+   - Board oversight of ESG risks
+   - ESG risk appetite definition
+   - Integration into business strategy
+   - Stakeholder engagement
+
+2. Risk Identification and Assessment
+   - ESG risk taxonomy development
+   - Materiality assessment
+   - Risk measurement methodologies
+   - Data quality and availability
+
+3. Risk Management and Controls
+   - ESG risk limits and thresholds
+   - Risk mitigation strategies
+   - Monitoring and reporting frameworks
+   - Internal control systems
+
+4. Disclosure and Transparency
+   - ESG risk disclosure requirements
+   - Reporting standards alignment
+   - Stakeholder communication
+   - Regulatory reporting
+
+CLIMATE RISK STRESS TESTING
+Requirements for climate stress testing:
+- Multiple scenario analysis (2°C, 4°C, disorderly transition)
+- Time horizons: short-term (1-3 years), medium-term (3-10 years)
+- Risk transmission channels analysis
+- Impact assessment on capital adequacy
+
+SUSTAINABLE FINANCE INTEGRATION
+Guidelines for sustainable finance:
+- Green asset ratio calculation
+- EU Taxonomy alignment assessment
+- Sustainable finance product development
+- ESG investment strategy implementation
+
+ESG RISK CATEGORIES
+Environmental Risks:
+- Climate change risks (physical and transition)
+- Natural resource depletion
+- Biodiversity loss
+- Pollution and waste management
+
+Social Risks:
+- Human rights violations
+- Labor standards and working conditions
+- Community relations
+- Data privacy and security
+
+Governance Risks:
+- Corporate governance failures
+- Corruption and bribery
+- Regulatory compliance
+- Business ethics
+
+RISK MEASUREMENT METHODOLOGIES
+Quantitative approaches:
+- ESG scoring models
+- Risk-adjusted return calculations
+- Stress testing scenarios
+- Portfolio impact analysis
+
+Qualitative approaches:
+- ESG risk assessments
+- Materiality analysis
+- Stakeholder engagement
+- Expert judgment
+
+DISCLOSURE REQUIREMENTS
+ESG risk disclosure should include:
+- Governance arrangements for ESG risks
+- Strategy for managing ESG risks
+- Risk management processes
+- Metrics and targets for ESG risks
+
+SUPERVISORY EXPECTATIONS
+Supervisors should:
+- Assess ESG risk management frameworks
+- Review ESG risk identification processes
+- Evaluate ESG risk measurement methodologies
+- Monitor ESG risk disclosure quality
+
+IMPLEMENTATION GUIDANCE
+Phase 1: ESG risk identification and assessment
+Phase 2: Integration into risk management frameworks
+Phase 3: Development of measurement methodologies
+Phase 4: Implementation of disclosure requirements
+
+CAPACITY BUILDING
+EBA supports capacity building through:
+- Technical guidance and best practices
+- Training and education programs
+- Industry collaboration and knowledge sharing
+- International cooperation on ESG risk management
+
+MONITORING AND REPORTING
+Regular monitoring of:
+- ESG risk management implementation
+- Progress on ESG risk integration
+- Quality of ESG risk disclosures
+- Effectiveness of ESG risk controls 

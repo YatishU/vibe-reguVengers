@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESG Copilot - RAG Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .rag-card {
+            border-left: 4px solid #28a745;
+            transition: transform 0.2s;
+        }
+        .rag-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .knowledge-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .update-status {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .relevance-badge {
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain"></i> ESG Copilot RAG
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link active" href="/rag-dashboard">RAG Dashboard</a>
+                <a class="nav-link" href="/upload">Upload</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">
+                    <i class="fas fa-robot"></i> RAG Knowledge Base Dashboard
+                </h1>
+                <p class="lead">Retrieval-Augmented Generation for Enhanced ESG Analysis</p>
+            </div>
+        </div>
+
+        <!-- Knowledge Base Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="knowledge-stats">
+                    <h4><i class="fas fa-database"></i> Knowledge Base Stats</h4>
+                    <div id="knowledgeStats">
+                        <div class="text-center">
+                            <div class="spinner-border" role="status"></div>
+                            <p>Loading statistics...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="update-status">
+                    <h4><i class="fas fa-sync-alt"></i> Update Status</h4>
+                    <div id="updateStatus">
+                        <div class="text-center">
+                            <div class="spinner-border" role="status"></div>
+                            <p>Loading status...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Analysis -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-search"></i> Knowledge Base Search</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="searchQuery" 
+                                       placeholder="Search ESG knowledge base...">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="CSRD">CSRD</option>
+                                    <option value="Taxonomy">EU Taxonomy</option>
+                                    <option value="Climate_Risk">Climate Risk</option>
+                                    <option value="SFDR">SFDR</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" onclick="searchKnowledge()">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list"></i> Search Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="searchResults" class="search-results">
+                            <p class="text-muted text-center">Enter a search query to find relevant ESG knowledge</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RAG Analysis Demo -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-magic"></i> RAG-Enhanced Analysis Demo</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Bank</label>
+                                <select class="form-select" id="demoBank">
+                                    <option value="IG">ING Bank</option>
+                                    <option value="RB">Rabobank</option>
+                                    <option value="AB">ABN AMRO</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Document Type</label>
+                                <select class="form-select" id="demoDocumentType">
+                                    <option value="CSRD">CSRD Report</option>
+                                    <option value="EU_Taxonomy">EU Taxonomy Report</option>
+                                    <option value="Climate_Risk">Climate Risk Report</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label">Sample Content</label>
+                            <textarea class="form-control" id="demoContent" rows="4" 
+                                      placeholder="Enter sample ESG document content for RAG analysis...">This document outlines our sustainability strategy and ESG performance for 2024. We have implemented comprehensive climate risk management frameworks and are working towards EU Taxonomy alignment. Our carbon footprint has been reduced by 15% compared to the previous year.</textarea>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-success" onclick="performRAGAnalysis()">
+                                <i class="fas fa-robot"></i> Perform RAG Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Results -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar"></i> RAG Analysis Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="analysisResults">
+                            <p class="text-muted text-center">Perform RAG analysis to see enhanced results</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Management -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs"></i> Knowledge Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button class="btn btn-warning w-100 mb-2" onclick="forceUpdate()">
+                                    <i class="fas fa-sync"></i> Force Update
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-info w-100 mb-2" onclick="exportKnowledge()">
+                                    <i class="fas fa-download"></i> Export Knowledge
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-secondary w-100 mb-2" onclick="cleanupKnowledge()">
+                                    <i class="fas fa-broom"></i> Cleanup Old Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadKnowledgeStats();
+            loadUpdateStatus();
+        });
+
+        async function loadKnowledgeStats() {
+            try {
+                const response = await fetch('/api/rag/knowledge-base/stats');
+                const stats = await response.json();
+                
+                document.getElementById('knowledgeStats').innerHTML = `
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h3>${stats.total_documents || 0}</h3>
+                            <small>Total Documents</small>
+                        </div>
+                        <div class="col-6">
+                            <h3>${stats.unique_sources || 0}</h3>
+                            <small>Sources</small>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <small><strong>Categories:</strong> ${(stats.categories || []).join(', ')}</small>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading knowledge stats:', error);
+            }
+        }
+
+        async function loadUpdateStatus() {
+            try {
+                const response = await fetch('/api/knowledge/status');
+                const status = await response.json();
+                
+                const lastUpdate = status.last_update ? new Date(status.last_update).toLocaleString() : 'Never';
+                const nextUpdate = status.next_update ? new Date(status.next_update).toLocaleString() : 'Unknown';
+                
+                document.getElementById('updateStatus').innerHTML = `
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h6>Last Update</h6>
+                            <small>${lastUpdate}</small>
+                        </div>
+                        <div class="col-6">
+                            <h6>Next Update</h6>
+                            <small>${nextUpdate}</small>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <small><strong>Auto-update:</strong> ${status.auto_update_enabled ? 'Enabled' : 'Disabled'}</small>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading update status:', error);
+            }
+        }
+
+        async function searchKnowledge() {
+            const query = document.getElementById('searchQuery').value;
+            const category = document.getElementById('categoryFilter').value;
+            
+            if (!query.trim()) {
+                alert('Please enter a search query');
+                return;
+            }
+            
+            try {
+                const params = new URLSearchParams({ query });
+                if (category) params.append('category', category);
+                
+                const response = await fetch(`/api/rag/search?${params}`);
+                const data = await response.json();
+                
+                displaySearchResults(data.results);
+            } catch (error) {
+                console.error('Error searching knowledge:', error);
+                document.getElementById('searchResults').innerHTML = '<p class="text-danger">Error searching knowledge base</p>';
+            }
+        }
+
+        function displaySearchResults(results) {
+            const container = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">No results found</p>';
+                return;
+            }
+            
+            const html = results.map(result => `
+                <div class="card mb-2 rag-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title">${result.metadata?.title || 'Untitled'}</h6>
+                                <p class="card-text">${result.content.substring(0, 200)}...</p>
+                                <small class="text-muted">
+                                    Source: ${result.source} | Category: ${result.category}
+                                </small>
+                            </div>
+                            <span class="badge bg-success relevance-badge">
+                                ${(result.metadata?.relevance_score || 0).toFixed(2)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+
+        async function performRAGAnalysis() {
+            const bank = document.getElementById('demoBank').value;
+            const documentType = document.getElementById('demoDocumentType').value;
+            const content = document.getElementById('demoContent').value;
+            
+            if (!content.trim()) {
+                alert('Please enter sample content for analysis');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/rag/analyze-with-context', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        bank: bank,
+                        document_type: documentType,
+                        year: 2024
+                    })
+                });
+                
+                const analysis = await response.json();
+                displayAnalysisResults(analysis);
+            } catch (error) {
+                console.error('Error performing RAG analysis:', error);
+                document.getElementById('analysisResults').innerHTML = '<p class="text-danger">Error performing RAG analysis</p>';
+            }
+        }
+
+        function displayAnalysisResults(analysis) {
+            const container = document.getElementById('analysisResults');
+            
+            const html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>ESG Scores</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" style="width: ${analysis.environmental_score * 100}%">
+                                Environmental: ${(analysis.environmental_score * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-info" style="width: ${analysis.social_score * 100}%">
+                                Social: ${(analysis.social_score * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-warning" style="width: ${analysis.governance_score * 100}%">
+                                Governance: ${(analysis.governance_score * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-primary" style="width: ${analysis.overall_score * 100}%">
+                                Overall: ${(analysis.overall_score * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>RAG Enhancement</h6>
+                        <p><strong>RAG Enhanced:</strong> ${analysis.rag_enhanced ? 'Yes' : 'No'}</p>
+                        <p><strong>Knowledge Sources:</strong> ${(analysis.context_sources || []).join(', ')}</p>
+                        <p><strong>Average Relevance:</strong> ${((analysis.context_relevance_scores || []).reduce((a, b) => a + b, 0) / (analysis.context_relevance_scores || []).length || 0).toFixed(2)}</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6>Analysis Details</h6>
+                    <pre class="bg-light p-3 rounded">${JSON.stringify(analysis, null, 2)}</pre>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        async function forceUpdate() {
+            try {
+                const response = await fetch('/api/knowledge/force-update', { method: 'POST' });
+                const result = await response.json();
+                alert(result.message);
+                loadUpdateStatus();
+            } catch (error) {
+                console.error('Error forcing update:', error);
+                alert('Error forcing update');
+            }
+        }
+
+        async function exportKnowledge() {
+            try {
+                const response = await fetch('/api/knowledge/export?format=json');
+                const data = await response.json();
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'esg_knowledge_base.json';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error exporting knowledge:', error);
+                alert('Error exporting knowledge base');
+            }
+        }
+
+        async function cleanupKnowledge() {
+            if (confirm('Are you sure you want to cleanup old knowledge base entries?')) {
+                try {
+                    const response = await fetch('/api/knowledge/cleanup?days_old=365', { method: 'POST' });
+                    const result = await response.json();
+                    alert(result.message);
+                } catch (error) {
+                    console.error('Error cleaning up knowledge:', error);
+                    alert('Error cleaning up knowledge base');
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

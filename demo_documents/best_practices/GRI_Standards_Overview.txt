@@ -1,0 +1,119 @@
+GRI Sustainability Reporting Standards Overview
+
+UNIVERSAL STANDARDS
+GRI 1: Foundation
+- Reporting principles and requirements
+- Stakeholder inclusiveness
+- Sustainability context
+- Materiality
+- Completeness
+
+GRI 2: General Disclosures
+- Organizational profile
+- Strategy, ethics, and integrity
+- Stakeholder engagement
+- Reporting practice
+- Governance
+
+GRI 3: Material Topics
+- Process for determining material topics
+- List of material topics
+- Management approach for material topics
+
+TOPIC STANDARDS
+Economic Topics:
+- Economic performance
+- Market presence
+- Indirect economic impacts
+- Procurement practices
+- Anti-corruption
+- Anti-competitive behavior
+
+Environmental Topics:
+- Materials
+- Energy
+- Water and effluents
+- Biodiversity
+- Emissions
+- Effluents and waste
+- Environmental compliance
+- Supplier environmental assessment
+
+Social Topics:
+- Employment
+- Labor/management relations
+- Occupational health and safety
+- Training and education
+- Diversity and equal opportunity
+- Non-discrimination
+- Freedom of association and collective bargaining
+- Child labor
+- Forced or compulsory labor
+- Human rights assessment
+- Local communities
+- Supplier social assessment
+- Public policy
+- Customer health and safety
+- Marketing and labeling
+- Customer privacy
+- Socioeconomic compliance
+
+REPORTING PRINCIPLES
+1. Accuracy: Information should be accurate and detailed
+2. Balance: Information should be unbiased and fairly represent positive and negative impacts
+3. Clarity: Information should be understandable and accessible
+4. Comparability: Information should be presented in a consistent manner
+5. Completeness: Information should cover all material topics
+6. Reliability: Information should be gathered, recorded, compiled, analyzed, and disclosed in a way that can be subject to examination
+7. Timeliness: Information should be available in time for stakeholders to make decisions
+8. Verifiability: Information should be presented in a way that enables internal and external parties to check it
+
+MATERIALITY ASSESSMENT
+Process for determining material topics:
+1. Identify sustainability topics
+2. Assess the significance of impacts
+3. Prioritize topics for reporting
+4. Validate with stakeholders
+5. Review and update regularly
+
+STAKEHOLDER INCLUSIVENESS
+Organizations should:
+- Identify stakeholders
+- Understand stakeholder concerns
+- Engage with stakeholders
+- Consider stakeholder input in reporting decisions
+
+SUSTAINABILITY CONTEXT
+Reports should:
+- Present performance in the context of sustainability challenges
+- Consider local, regional, and global sustainability issues
+- Address the organization's contribution to sustainable development
+
+COMPLETENESS
+Reports should:
+- Cover all material topics
+- Include all relevant indicators
+- Address stakeholder concerns
+- Provide sufficient detail for understanding
+
+QUALITY ASSURANCE
+Organizations should:
+- Establish internal controls
+- Conduct internal reviews
+- Consider external assurance
+- Maintain documentation
+
+IMPLEMENTATION GUIDANCE
+Phase 1: Foundation and general disclosures
+Phase 2: Material topic identification
+Phase 3: Topic-specific disclosures
+Phase 4: Quality assurance and verification
+Phase 5: Continuous improvement
+
+BENEFITS OF GRI IMPLEMENTATION
+- Enhanced transparency and accountability
+- Improved stakeholder relationships
+- Better risk management
+- Competitive advantage
+- Regulatory compliance
+- Investor confidence 

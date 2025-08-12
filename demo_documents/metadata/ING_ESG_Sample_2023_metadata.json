@@ -1,0 +1,32 @@
+{
+  "bank": "IG",
+  "document_type": "CSRD",
+  "year": 2023,
+  "source": "ING Group",
+  "category": "bank_reports",
+  "title": "ING Group ESG Report 2023",
+  "description": "ING Group ESG report with climate risk and CSRD compliance focus",
+  "key_topics": [
+    "CSRD compliance",
+    "Climate risk management",
+    "EU Taxonomy alignment",
+    "Sustainable financing",
+    "ESG performance metrics"
+  ],
+  "esg_scores": {
+    "environmental": 0.82,
+    "social": 0.78,
+    "governance": 0.91,
+    "overall": 0.84
+  },
+  "compliance_frameworks": [
+    "CSRD",
+    "TCFD",
+    "GRI",
+    "EU Taxonomy",
+    "SFDR"
+  ],
+  "file_size": "text",
+  "created_date": "2024-12-08",
+  "demo_purpose": true
+} 

@@ -1,0 +1,32 @@
+{
+  "bank": "RB",
+  "document_type": "Climate_Risk",
+  "year": 2023,
+  "source": "Rabobank",
+  "category": "bank_reports",
+  "title": "Rabobank Sustainability Report 2023",
+  "description": "Rabobank sustainability report with agricultural and climate risk focus",
+  "key_topics": [
+    "Climate risk assessment",
+    "Agricultural sustainability",
+    "EU Taxonomy compliance",
+    "Social impact",
+    "Circular economy"
+  ],
+  "esg_scores": {
+    "environmental": 0.85,
+    "social": 0.83,
+    "governance": 0.88,
+    "overall": 0.85
+  },
+  "compliance_frameworks": [
+    "CSRD",
+    "TCFD",
+    "GRI",
+    "EU Taxonomy",
+    "SASB"
+  ],
+  "file_size": "text",
+  "created_date": "2024-12-08",
+  "demo_purpose": true
+} 

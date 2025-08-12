@@ -1,0 +1,84 @@
+DNB Climate Risk Guidelines for Financial Institutions
+
+SUPERVISORY EXPECTATIONS
+The Dutch National Bank (DNB) expects financial institutions to:
+1. Integrate climate risks into risk management frameworks
+2. Conduct climate stress testing
+3. Disclose climate-related financial risks
+4. Develop climate transition plans
+
+CLIMATE RISK CATEGORIES
+Physical Risks:
+- Acute: Extreme weather events, natural disasters
+- Chronic: Gradual climate changes, temperature increases
+
+Transition Risks:
+- Policy: Regulatory changes, carbon pricing
+- Legal: Climate litigation, liability claims
+- Technology: Clean technology adoption
+- Market: Changing consumer preferences
+- Reputation: Stakeholder expectations
+
+RISK MANAGEMENT REQUIREMENTS
+1. Climate Risk Identification
+   - Portfolio carbon footprint assessment
+   - Sector-specific climate risk analysis
+   - Geographic exposure mapping
+
+2. Climate Risk Assessment
+   - Scenario analysis using multiple pathways
+   - Impact assessment on business models
+   - Financial impact quantification
+
+3. Integration into Risk Framework
+   - Credit risk: Climate factors in lending decisions
+   - Market risk: Climate-related market changes
+   - Operational risk: Climate impact on operations
+   - Strategic risk: Business model adaptation
+
+4. Monitoring and Reporting
+   - Regular climate risk reporting
+   - Progress tracking on climate targets
+   - Stakeholder communication
+
+SUPERVISORY REVIEW
+DNB will review:
+- Climate risk governance and oversight
+- Risk identification and assessment processes
+- Integration into risk management
+- Climate stress testing capabilities
+- Disclosure quality and transparency
+
+CLIMATE STRESS TESTING
+Requirements for climate stress testing:
+- Multiple scenario analysis (2°C, 4°C, disorderly transition)
+- Time horizons: short-term (1-3 years), medium-term (3-10 years)
+- Risk transmission channels analysis
+- Impact assessment on capital adequacy
+
+DISCLOSURE REQUIREMENTS
+Climate risk disclosure should include:
+- Governance arrangements for climate risks
+- Strategy for managing climate risks
+- Risk management processes
+- Metrics and targets for climate risks
+
+TRANSITION PLANS
+Financial institutions should develop:
+- Climate transition plans aligned with Paris Agreement
+- Sector-specific transition strategies
+- Client engagement on climate transition
+- Progress monitoring and reporting
+
+CAPACITY BUILDING
+DNB supports capacity building through:
+- Guidance and best practices sharing
+- Training and education programs
+- Industry collaboration and knowledge sharing
+- International cooperation on climate risk
+
+IMPLEMENTATION TIMELINE
+Phase 1 (2023-2024): Initial climate risk assessment
+Phase 2 (2024-2025): Integration into risk frameworks
+Phase 3 (2025-2026): Advanced stress testing and disclosure
+Phase 4 (2026+): Full climate risk integration 
