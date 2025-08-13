@@ -1,0 +1,150 @@
+{
+  "demo_documents": {
+    "description": "ESG Demo Documents for RAG-Enhanced Analysis",
+    "created_date": "2024-12-08",
+    "total_documents": 7,
+    "categories": {
+      "bank_reports": {
+        "description": "Sample ESG reports from Dutch banks",
+        "documents": [
+          {
+            "name": "ING_ESG_Sample_2023.txt",
+            "bank": "IG",
+            "document_type": "CSRD",
+            "year": 2023,
+            "description": "ING Group ESG report with climate risk and CSRD compliance",
+            "key_features": [
+              "CSRD compliance focus",
+              "Climate risk management",
+              "EU Taxonomy alignment",
+              "Sustainable financing portfolio"
+            ]
+          },
+          {
+            "name": "Rabobank_Sustainability_Sample_2023.txt",
+            "bank": "RB",
+            "document_type": "Climate_Risk",
+            "year": 2023,
+            "description": "Rabobank sustainability report with agricultural focus",
+            "key_features": [
+              "Agricultural sustainability",
+              "Climate risk assessment",
+              "Social impact programs",
+              "Circular economy initiatives"
+            ]
+          },
+          {
+            "name": "ABN_AMRO_ESG_Sample_2023.txt",
+            "bank": "AB",
+            "document_type": "EU_Taxonomy",
+            "year": 2023,
+            "description": "ABN AMRO ESG report with circular economy focus",
+            "key_features": [
+              "Circular economy financing",
+              "EU Taxonomy alignment",
+              "Climate transition support",
+              "Social impact initiatives"
+            ]
+          }
+        ]
+      },
+      "regulatory": {
+        "description": "Regulatory guidelines and requirements",
+        "documents": [
+          {
+            "name": "DNB_Climate_Risk_Guidelines.txt",
+            "source": "DNB",
+            "category": "Climate_Risk",
+            "description": "Dutch National Bank climate risk guidelines",
+            "key_features": [
+              "Climate risk categories",
+              "Risk management requirements",
+              "Supervisory expectations",
+              "Implementation timeline"
+            ]
+          },
+          {
+            "name": "EBA_ESG_Guidelines.txt",
+            "source": "EBA",
+            "category": "Sustainable_Finance",
+            "description": "EBA guidelines on ESG risk management",
+            "key_features": [
+              "ESG risk management principles",
+              "Climate stress testing requirements",
+              "Sustainable finance integration",
+              "Disclosure requirements"
+            ]
+          }
+        ]
+      },
+      "best_practices": {
+        "description": "Industry best practices and frameworks",
+        "documents": [
+          {
+            "name": "TCFD_Recommendations.txt",
+            "source": "TCFD",
+            "category": "Climate_Risk",
+            "description": "TCFD recommendations for climate disclosures",
+            "key_features": [
+              "Governance requirements",
+              "Strategy disclosure",
+              "Risk management",
+              "Metrics and targets"
+            ]
+          },
+          {
+            "name": "GRI_Standards_Overview.txt",
+            "source": "GRI",
+            "category": "Reporting",
+            "description": "GRI sustainability reporting standards",
+            "key_features": [
+              "Universal standards",
+              "Topic standards",
+              "Reporting principles",
+              "Implementation guidance"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "usage_instructions": {
+    "upload_sequence": [
+      "1. Start with ING_ESG_Sample_2023.txt (CSRD document type)",
+      "2. Add Rabobank_Sustainability_Sample_2023.txt (Climate Risk document type)",
+      "3. Include ABN_AMRO_ESG_Sample_2023.txt (EU Taxonomy document type)",
+      "4. Use RAG-enhanced analysis for best results"
+    ],
+    "demo_scenarios": [
+      "Compare standard vs RAG-enhanced analysis",
+      "Search knowledge base for regulatory requirements",
+      "Generate enhanced recommendations",
+      "View industry benchmark comparisons",
+      "Explore regulatory compliance gaps",
+      "Analyze ESG performance trends"
+    ],
+    "rag_features": [
+      "Enhanced accuracy with latest regulatory context",
+      "Source transparency and traceability",
+      "Industry benchmark comparisons",
+      "Real-time knowledge base updates",
+      "Semantic search capabilities",
+      "Comprehensive compliance analysis"
+    ]
+  },
+  "technical_details": {
+    "file_formats": "Text files (.txt) for easy processing",
+    "encoding": "UTF-8",
+    "metadata_format": "JSON",
+    "compatibility": "Works with RAG-enhanced ESG analyzer",
+    "security": "All documents are sample content for demo purposes"
+  },
+  "demo_tips": [
+    "Upload documents in the suggested sequence for best comparison",
+    "Enable RAG-enhanced analysis for improved accuracy",
+    "Use the RAG dashboard to explore knowledge base",
+    "Compare analysis results between different document types",
+    "Explore regulatory insights for each bank",
+    "Generate enhanced recommendations using RAG knowledge"
+  ]
+} 

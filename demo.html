@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESG Copilot Demo - Dutch Banks Compliance Analysis</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="ml-2 text-xl font-bold text-gray-900">ESG Copilot</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <a href="#dashboard" class="text-gray-900 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
+                            <a href="#upload" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Upload Documents</a>
+                            <a href="#reports" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Reports</a>
+                            <a href="#test-cases" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Test Cases</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        New Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Dashboard Section -->
+        <div id="dashboard" x-data="dashboardData()" x-init="loadDashboardData()">
+            <!-- Hero Section -->
+            <div class="gradient-bg rounded-2xl p-8 mb-8 text-white">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="text-4xl font-bold mb-4">ESG Copilot Dashboard</h1>
+                    <p class="text-xl opacity-90 mb-6">AI-powered ESG compliance analysis for Dutch banks (IG, RB, AB)</p>
+                    
+                    <!-- Problem Statement & Solution -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6 mb-6">
+                        <h3 class="text-lg font-semibold mb-3">🎯 Problem & Solution</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <h4 class="font-semibold mb-2">💥 The Pain Point:</h4>
+                                <p class="opacity-90">Dutch banks struggle with manual ESG compliance processes, facing significant regulatory penalties and operational costs. Current systems can't efficiently analyze complex ESG documents (CSRD reports, EU Taxonomy disclosures, Climate Risk assessments), leading to compliance gaps, delayed reporting, and increased regulatory scrutiny.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">🚀 Our Solution:</h4>
+                                <p class="opacity-90">AI-powered ESG compliance automation that processes sustainability reports in minutes, identifies regulatory gaps with 95% accuracy, and provides actionable recommendations to ensure full compliance with EU regulations.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="glass-effect rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold">3</div>
+                            <div class="text-sm opacity-80">Banks Analyzed</div>
+                        </div>
+                        <div class="glass-effect rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold">12</div>
+                            <div class="text-sm opacity-80">Documents Processed</div>
+                        </div>
+                        <div class="glass-effect rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold">78.5%</div>
+                            <div class="text-sm opacity-80">Average ESG Score</div>
+                        </div>
+                        <div class="glass-effect rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold">3</div>
+                            <div class="text-sm opacity-80">Critical Gaps</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESG Scores Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- ESG Score Cards -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">ESG Performance Rankings</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>ESG Scoring:</strong> Environmental (40%), Social (30%), Governance (30%) weighted scores. Higher scores indicate better sustainability performance and regulatory compliance.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg card-hover">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 bg-yellow-500">1</div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">IG</div>
+                                    <div class="text-sm text-gray-500">ING Group</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-green-600">82.0%</div>
+                                <div class="text-sm text-gray-500">Increasing</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg card-hover">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 bg-gray-400">2</div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">RB</div>
+                                    <div class="text-sm text-gray-500">Rabobank</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-yellow-600">81.0%</div>
+                                <div class="text-sm text-gray-500">Stable</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg card-hover">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 bg-orange-600">3</div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">AB</div>
+                                    <div class="text-sm text-gray-500">ABN AMRO</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-red-600">78.0%</div>
+                                <div class="text-sm text-gray-500">Decreasing</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESG Score Breakdown Chart -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">ESG Score Breakdown</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>Radar Chart:</strong> Shows Environmental, Social, and Governance scores for each bank. Larger areas indicate better performance. Helps identify strengths and weaknesses across ESG dimensions.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="esgBreakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance & Risk Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Compliance Gaps -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Compliance Gaps</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>Compliance Gaps:</strong> AI-identified regulatory violations or missing requirements. Critical gaps require immediate attention, while Medium/Low gaps need monitoring. Based on EU CSRD, Taxonomy, and Climate Risk regulations.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 border-l-4 border-red-400 rounded-r-lg bg-red-50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="font-medium text-gray-900">IG</div>
+                                    <div class="text-sm text-gray-600">CSRD</div>
+                                    <div class="text-xs text-gray-500 mt-1">Incomplete double materiality assessment</div>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full font-medium bg-red-100 text-red-800">High</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 border-l-4 border-orange-400 rounded-r-lg bg-orange-50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="font-medium text-gray-900">RB</div>
+                                    <div class="text-sm text-gray-600">EU Taxonomy</div>
+                                    <div class="text-xs text-gray-500 mt-1">Missing technical screening criteria alignment</div>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full font-medium bg-orange-100 text-orange-800">Medium</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Taxonomy Alignment -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">EU Taxonomy Alignment</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>EU Taxonomy:</strong> EU classification system for sustainable economic activities. Shows what percentage of bank investments align with green criteria. Higher percentages indicate more sustainable investment portfolios.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium text-gray-900">IG</span>
+                                <span class="text-lg font-bold text-green-600">75.0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">55.0% eligible investments</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium text-gray-900">RB</span>
+                                <span class="text-lg font-bold text-yellow-600">68.0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 68%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">48.0% eligible investments</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium text-gray-900">AB</span>
+                                <span class="text-lg font-bold text-green-600">72.0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 72%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">52.0% eligible investments</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Climate Risk -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Climate Risk Assessment</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>Climate Risk:</strong> TCFD-aligned assessment of physical and transition risks. Physical risks include extreme weather events, while transition risks include policy changes. Lower percentages indicate better climate resilience.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium text-gray-900">IG</span>
+                                <span class="text-sm font-medium text-green-600">30.0%</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Physical Risk:</span>
+                                    <span>25.0%</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Transition Risk:</span>
+                                    <span>35.0%</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Trend: Decreasing</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium text-gray-900">RB</span>
+                                <span class="text-sm font-medium text-yellow-600">35.0%</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Physical Risk:</span>
+                                    <span>30.0%</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Transition Risk:</span>
+                                    <span>40.0%</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Trend: Stable</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium text-gray-900">AB</span>
+                                <span class="text-sm font-medium text-orange-600">40.0%</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Physical Risk:</span>
+                                    <span>35.0%</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Transition Risk:</span>
+                                    <span>45.0%</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Trend: Increasing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Drift Analysis Chart -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">ESG Drift Analysis</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>Drift Analysis:</strong> Tracks ESG performance changes over time. Upward trends show improving sustainability, downward trends indicate declining performance. Helps identify which banks are making progress or falling behind.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="driftChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Compliance Trend Chart -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">Compliance Trend</h2>
+                        <div class="relative group">
+                            <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <strong>Compliance Trend:</strong> Shows compliance rates across different EU regulations (CSRD, EU Taxonomy, Climate Risk, SFDR). Higher bars indicate better regulatory compliance. Helps identify which regulations need more attention.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="complianceTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Gaps & Recommendations -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Compliance Gaps & Strategic Recommendations</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">🔍 Critical Compliance Gaps Identified</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 border-l-4 border-red-500 bg-red-50 rounded-r-lg">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-red-800">IG - CSRD Materiality Assessment</h4>
+                                        <p class="text-sm text-red-700 mt-1">Missing comprehensive double materiality assessment required by Article 19a</p>
+                                        <p class="text-xs text-red-600 mt-2">Risk: Regulatory non-compliance, delayed reporting</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Critical</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border-l-4 border-orange-500 bg-orange-50 rounded-r-lg">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-orange-800">RB - EU Taxonomy Alignment</h4>
+                                        <p class="text-sm text-orange-700 mt-1">Only 68% alignment with technical screening criteria</p>
+                                        <p class="text-xs text-orange-600 mt-2">Risk: Limited green investment opportunities</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 font-medium">High</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-r-lg">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-yellow-800">AB - Climate Risk Disclosure</h4>
+                                        <p class="text-sm text-yellow-700 mt-1">Insufficient TCFD-aligned scenario analysis</p>
+                                        <p class="text-xs text-yellow-600 mt-2">Risk: Incomplete risk assessment, investor concerns</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">💡 Strategic Recommendations</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">Immediate Actions (0-3 months)</h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li>• Conduct comprehensive materiality assessment for IG</li>
+                                    <li>• Implement EU Taxonomy tracking system for RB</li>
+                                    <li>• Enhance climate risk scenario modeling for AB</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <h4 class="font-semibold text-green-800 mb-2">Medium-term Strategy (3-12 months)</h4>
+                                <ul class="text-sm text-green-700 space-y-1">
+                                    <li>• Establish automated ESG monitoring dashboard</li>
+                                    <li>• Develop stakeholder engagement framework</li>
+                                    <li>• Implement ESG training programs</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="p-4 bg-purple-50 rounded-lg">
+                                <h4 class="font-semibold text-purple-800 mb-2">Long-term Vision (1-3 years)</h4>
+                                <ul class="text-sm text-purple-700 space-y-1">
+                                    <li>• Achieve 90%+ EU Taxonomy alignment</li>
+                                    <li>• Lead industry in climate risk disclosure</li>
+                                    <li>• Become ESG compliance benchmark</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vision 2030 Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">🌍 Vision 2030: ESG Compliance Roadmap</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Current State (2024)</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Average ESG Score:</span>
+                                <span class="font-semibold text-orange-600">78.5%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Taxonomy Alignment:</span>
+                                <span class="font-semibold text-orange-600">71.7%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Climate Risk Score:</span>
+                                <span class="font-semibold text-orange-600">35.0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Compliance Gaps:</span>
+                                <span class="font-semibold text-red-600">3 Critical</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Target 2030</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Average ESG Score:</span>
+                                <span class="font-semibold text-green-600">92.0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Taxonomy Alignment:</span>
+                                <span class="font-semibold text-green-600">95.0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Climate Risk Score:</span>
+                                <span class="font-semibold text-green-600">15.0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Compliance Gaps:</span>
+                                <span class="font-semibold text-green-600">0 Critical</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Key Milestones</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span>2025: 85% ESG Score, 80% Taxonomy</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                <span>2027: 90% ESG Score, 90% Taxonomy</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                                <span>2030: 92% ESG Score, 95% Taxonomy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">🚀 Transformation Strategy</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <h5 class="font-medium text-gray-700 mb-1">Technology Investment</h5>
+                            <p class="text-gray-600">Strategic investment in AI-powered ESG monitoring, automated compliance tracking, and real-time risk assessment systems to reduce manual processing time by 80%.</p>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-gray-700 mb-1">Regulatory Leadership</h5>
+                            <p class="text-gray-600">Become industry benchmark for ESG compliance, influencing EU policy development and setting new standards for sustainable banking.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <button onclick="showNotification('Document upload feature activated!', 'success')" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-green-500 hover:bg-green-50 transition-colors">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <div class="font-medium text-gray-900">Upload Document</div>
+                        <div class="text-sm text-gray-500">Analyze new ESG reports</div>
+                    </button>
+                    
+                    <button onclick="showNotification('Report generation feature activated!', 'success')" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <div class="font-medium text-gray-900">Generate Reports</div>
+                        <div class="text-sm text-gray-500">Create detailed analysis</div>
+                    </button>
+                    
+                    <button onclick="showNotification('Test case generation feature activated!', 'success')" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-purple-500 hover:bg-purple-50 transition-colors">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <div class="font-medium text-gray-900">Test Cases</div>
+                        <div class="text-sm text-gray-500">BDD test generation</div>
+                    </button>
+                    
+                    <button onclick="refreshData()" class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-orange-500 hover:bg-orange-50 transition-colors">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <div class="font-medium text-gray-900">Refresh Data</div>
+                        <div class="text-sm text-gray-500">Update dashboard</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="upload" class="mt-12">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Document Upload Demo</h2>
+                <p class="text-gray-600 mb-6">Experience the document upload and analysis workflow</p>
+                
+                <!-- Document Types & Analysis -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">📄 Document Types We Analyze</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p><strong>CSRD Reports:</strong> Corporate Sustainability Reporting Directive documents, including Double Materiality Assessment Reports</p>
+                                <p><strong>EU Taxonomy Disclosures:</strong> Technical screening criteria alignment reports and green investment classifications</p>
+                                <p><strong>Climate Risk Reports:</strong> TCFD-aligned stress test reports, scenario analysis, and climate vulnerability assessments</p>
+                                <p><strong>AI Processing:</strong> GPT-4 analyzes these documents using specialized prompts to identify compliance gaps and provide recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Upload Process</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-green-800">Select bank (IG, RB, AB)</span>
+                            </div>
+                            
+                            <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-green-800">Choose document type (CSRD, EU Taxonomy, Climate Risk)</span>
+                            </div>
+                            
+                            <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-green-800">Upload PDF document (max 50MB)</span>
+                            </div>
+                            
+                            <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-green-800">AI analysis processing</span>
+                            </div>
+                            
+                            <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-green-800">Results and insights</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Demo Upload</h3>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-gray-600 mb-2">Click to simulate document upload</p>
+                            <button onclick="simulateUpload()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                Simulate Upload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Cases Section -->
+        <div id="test-cases" class="mt-12">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">BDD Test Cases & Azure Test Plan Integration</h2>
+                <p class="text-gray-600 mb-6">Comprehensive test automation with Azure DevOps traceability matrix and acceptance criteria</p>
+                
+                <!-- Azure Integration Info -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">🔗 Azure DevOps Integration</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p><strong>Traceability Matrix:</strong> Links test cases to requirements, user stories, and acceptance criteria</p>
+                                <p><strong>Acceptance Criteria:</strong> Automated validation of business requirements and regulatory compliance</p>
+                                <p><strong>Test Execution:</strong> Integrated with Azure Test Plans for automated test runs and reporting</p>
+                                <p><strong>Compliance Tracking:</strong> Real-time monitoring of ESG compliance test coverage and results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Test Case Overview</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors cursor-pointer" onclick="showBDDTestCase('csrd')">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">CSRD Analysis Test Suite</h4>
+                                        <p class="text-sm text-gray-600 mt-1">ING Group (IG) - Materiality Assessment</p>
+                                        <div class="text-xs text-blue-600 mt-2">Click to view BDD format</div>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">High Priority</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors cursor-pointer" onclick="showBDDTestCase('taxonomy')">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">EU Taxonomy Test Suite</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Rabobank (RB) - Green Investment Alignment</p>
+                                        <div class="text-xs text-blue-600 mt-2">Click to view BDD format</div>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">High Priority</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors cursor-pointer" onclick="showBDDTestCase('climate')">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Climate Risk Test Suite</h4>
+                                        <p class="text-sm text-gray-600 mt-1">ABN AMRO (AB) - TCFD Compliance</p>
+                                        <div class="text-xs text-blue-600 mt-2">Click to view BDD format</div>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">High Priority</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">🔗 Azure Test Plan Integration</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">Traceability Matrix</h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li>• Test Cases → User Stories</li>
+                                    <li>• User Stories → Requirements</li>
+                                    <li>• Requirements → Acceptance Criteria</li>
+                                    <li>• Acceptance Criteria → Regulatory Compliance</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <h4 class="font-semibold text-green-800 mb-2">Acceptance Criteria</h4>
+                                <ul class="text-sm text-green-700 space-y-1">
+                                    <li>• 95%+ accuracy in gap detection</li>
+                                    <li>• < 30 seconds processing time</li>
+                                    <li>• 100% regulatory coverage</li>
+                                    <li>• Real-time compliance monitoring</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="p-4 bg-purple-50 rounded-lg">
+                                <h4 class="font-semibold text-purple-800 mb-2">Test Execution</h4>
+                                <ul class="text-sm text-purple-700 space-y-1">
+                                    <li>• Automated test runs</li>
+                                    <li>• Continuous integration</li>
+                                    <li>• Compliance reporting</li>
+                                    <li>• Risk assessment tracking</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- BDD Test Case Modal -->
+                <div id="bddModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold text-gray-900" id="modalTitle">BDD Test Case</h3>
+                                    <button onclick="closeBDDModal()" class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div id="modalContent" class="space-y-4">
+                                    <!-- Content will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-500">
+                    © 2024 ESG Copilot. Powered by AI for Dutch Banks Compliance.
+                </div>
+                <div class="text-sm text-gray-500">
+                    Demo Mode - No Python Required | Professional ESG Compliance Solution
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dashboard data management
+        function dashboardData() {
+            return {
+                summary: {
+                    total_banks: 3,
+                    total_documents: 12,
+                    total_analyses: 15,
+                    average_esg_score: 0.785,
+                    compliance_rate: 0.82,
+                    critical_gaps: 3
+                },
+                
+                loadDashboardData() {
+                    this.$nextTick(() => {
+                        this.initializeCharts();
+                    });
+                },
+                
+                initializeCharts() {
+                    this.createESGBreakdownChart();
+                    this.createDriftChart();
+                    this.createComplianceTrendChart();
+                },
+                
+                createESGBreakdownChart() {
+                    const ctx = document.getElementById('esgBreakdownChart');
+                    if (!ctx) return;
+                    
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: ['Environmental', 'Social', 'Governance'],
+                            datasets: [
+                                {
+                                    label: 'IG',
+                                    data: [0.82, 0.78, 0.85],
+                                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'RB',
+                                    data: [0.79, 0.81, 0.83],
+                                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                    borderColor: 'rgba(16, 185, 129, 1)',
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'AB',
+                                    data: [0.76, 0.79, 0.80],
+                                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                                    borderColor: 'rgba(245, 158, 11, 1)',
+                                    borderWidth: 2
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    beginAtZero: true,
+                                    max: 1,
+                                    ticks: { stepSize: 0.2 }
+                                }
+                            }
+                        }
+                    });
+                },
+                
+                createDriftChart() {
+                    const ctx = document.getElementById('driftChart');
+                    if (!ctx) return;
+                    
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [
+                                {
+                                    label: 'IG',
+                                    data: [0.75, 0.77, 0.79, 0.78, 0.80, 0.82],
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'RB',
+                                    data: [0.78, 0.79, 0.80, 0.81, 0.80, 0.81],
+                                    borderColor: 'rgba(16, 185, 129, 1)',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'AB',
+                                    data: [0.80, 0.79, 0.78, 0.77, 0.78, 0.78],
+                                    borderColor: 'rgba(245, 158, 11, 1)',
+                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, max: 1 }
+                            }
+                        }
+                    });
+                },
+                
+                createComplianceTrendChart() {
+                    const ctx = document.getElementById('complianceTrendChart');
+                    if (!ctx) return;
+                    
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['CSRD', 'EU Taxonomy', 'Climate Risk', 'SFDR'],
+                            datasets: [{
+                                label: 'Compliance Rate',
+                                data: [0.85, 0.72, 0.68, 0.78],
+                                backgroundColor: [
+                                    'rgba(16, 185, 129, 0.8)',
+                                    'rgba(245, 158, 11, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, max: 1 }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+            
+            const colors = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                warning: 'bg-yellow-500 text-white',
+                info: 'bg-blue-500 text-white'
+            };
+            
+            notification.className += ` ${colors[type]}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function simulateUpload() {
+            showNotification('Document upload simulation started!', 'info');
+            
+            setTimeout(() => {
+                showNotification('Document processing...', 'info');
+            }, 1000);
+            
+            setTimeout(() => {
+                showNotification('AI analysis in progress...', 'info');
+            }, 2000);
+            
+            setTimeout(() => {
+                showNotification('Analysis complete! ESG scores and compliance gaps identified.', 'success');
+            }, 4000);
+        }
+
+        function refreshData() {
+            showNotification('Dashboard data refreshed successfully', 'success');
+        }
+
+        // Chart.js configuration
+        Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+        Chart.defaults.color = '#6B7280';
+
+        // BDD Test Case Modal Functions
+        function showBDDTestCase(type) {
+            const modal = document.getElementById('bddModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            let title, content;
+            
+            switch(type) {
+                case 'csrd':
+                    title = 'CSRD Analysis Test Suite - ING Group (IG)';
+                    content = `
+                        <div class="space-y-6">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">Feature: CSRD Materiality Assessment</h4>
+                                <p class="text-sm text-blue-700">As a compliance officer, I want to analyze CSRD documents to identify materiality assessment gaps so that I can ensure regulatory compliance.</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-green-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Successful CSRD Document Analysis</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> I have uploaded a CSRD Double Materiality Assessment Report for ING Group</p>
+                                        <p><strong>When</strong> I submit the document for AI analysis</p>
+                                        <p><strong>Then</strong> the system should identify compliance gaps with 95% accuracy</p>
+                                        <p><strong>And</strong> provide actionable recommendations for improvement</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-l-4 border-orange-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Missing Materiality Assessment</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> the CSRD document lacks comprehensive double materiality assessment</p>
+                                        <p><strong>When</strong> the AI analyzes the document</p>
+                                        <p><strong>Then</strong> it should flag this as a critical compliance gap</p>
+                                        <p><strong>And</strong> recommend immediate action to address Article 19a requirements</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-l-4 border-red-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Regulatory Risk Detection</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> the document contains potential regulatory violations</p>
+                                        <p><strong>When</strong> the system processes the analysis</p>
+                                        <p><strong>Then</strong> it should calculate potential penalty amounts</p>
+                                        <p><strong>And</strong> prioritize gaps by severity and financial impact</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-semibold text-gray-800 mb-2">Acceptance Criteria</h5>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• Analysis completes within 30 seconds</li>
+                                    <li>• Identifies all Article 19a compliance requirements</li>
+                                    <li>• Provides specific improvement recommendations</li>
+                                    <li>• Calculates risk exposure and potential penalties</li>
+                                    <li>• Generates compliance score with breakdown</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'taxonomy':
+                    title = 'EU Taxonomy Test Suite - Rabobank (RB)';
+                    content = `
+                        <div class="space-y-6">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-800 mb-2">Feature: EU Taxonomy Alignment Analysis</h4>
+                                <p class="text-sm text-green-700">As a sustainability analyst, I want to assess EU Taxonomy alignment to track green investment performance and ensure regulatory compliance.</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-green-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Taxonomy Alignment Assessment</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> I have uploaded an EU Taxonomy Alignment Disclosure for Rabobank</p>
+                                        <p><strong>When</strong> the AI analyzes the document</p>
+                                        <p><strong>Then</strong> it should calculate alignment percentage with technical screening criteria</p>
+                                        <p><strong>And</strong> identify eligible green investments</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-l-4 border-orange-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Non-Compliant Sector Detection</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> the document contains investments in non-compliant sectors</p>
+                                        <p><strong>When</strong> the system processes the taxonomy analysis</p>
+                                        <p><strong>Then</strong> it should flag these sectors as non-compliant</p>
+                                        <p><strong>And</strong> suggest alternative green investment opportunities</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-l-4 border-blue-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: SFDR and Green Bond Preparation</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> the bank plans to issue green bonds</p>
+                                        <p><strong>When</strong> the taxonomy alignment is assessed</p>
+                                        <p><strong>Then</strong> it should validate eligibility for green bond issuance</p>
+                                        <p><strong>And</strong> provide SFDR compliance recommendations</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-semibold text-gray-800 mb-2">Acceptance Criteria</h5>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• Calculates accurate taxonomy alignment percentage</li>
+                                    <li>• Identifies all non-compliant sectors and activities</li>
+                                    <li>• Validates against technical screening criteria</li>
+                                    <li>• Provides green bond eligibility assessment</li>
+                                    <li>• Generates SFDR compliance recommendations</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'climate':
+                    title = 'Climate Risk Test Suite - ABN AMRO (AB)';
+                    content = `
+                        <div class="space-y-6">
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-purple-800 mb-2">Feature: TCFD Climate Risk Assessment</h4>
+                                <p class="text-sm text-purple-700">As a risk manager, I want to evaluate climate risk exposure using TCFD principles to ensure comprehensive risk management and regulatory compliance.</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-green-500 pl-5">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: TCFD Compliance Assessment</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> I have uploaded a Climate Risk Stress Test Report for ABN AMRO</p>
+                                        <p><strong>When</strong> the AI analyzes the document</p>
+                                        <p><strong>Then</strong> it should assess TCFD framework compliance</p>
+                                        <p><strong>And</strong> identify missing scenario analysis components</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-l-4 border-orange-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Physical Risk Assessment</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> the document lacks comprehensive physical risk analysis</p>
+                                        <p><strong>When</strong> the system evaluates climate risk exposure</p>
+                                        <p><strong>Then</strong> it should identify missing physical risk metrics</p>
+                                        <p><strong>And</strong> recommend enhanced disclosure requirements</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-l-4 border-red-500 pl-4">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Scenario: Transition Risk Evaluation</h5>
+                                    <div class="text-sm space-y-2">
+                                        <p><strong>Given</strong> the bank has exposure to high-carbon sectors</p>
+                                        <p><strong>When</strong> transition risk is assessed</p>
+                                        <p><strong>Then</strong> it should calculate transition risk exposure</p>
+                                        <p><strong>And</strong> suggest risk mitigation strategies</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-semibold text-gray-800 mb-2">Acceptance Criteria</h5>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• Validates TCFD framework compliance</li>
+                                    <li>• Identifies missing scenario analysis components</li>
+                                    <li>• Assesses physical and transition risk exposure</li>
+                                    <li>• Provides risk mitigation recommendations</li>
+                                    <li>• Generates climate vulnerability index</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            modalTitle.textContent = title;
+            modalContent.innerHTML = content;
+            modal.classList.remove('hidden');
+        }
+        
+        function closeBDDModal() {
+            const modal = document.getElementById('bddModal');
+            modal.classList.add('hidden');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('bddModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBDDModal();
+            }
+        });
+    </script>
+</body>
+</html> 

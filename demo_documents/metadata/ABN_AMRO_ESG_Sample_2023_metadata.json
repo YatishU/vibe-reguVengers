@@ -1,0 +1,32 @@
+{
+  "bank": "AB",
+  "document_type": "EU_Taxonomy",
+  "year": 2023,
+  "source": "ABN AMRO",
+  "category": "bank_reports",
+  "title": "ABN AMRO ESG Report 2023",
+  "description": "ABN AMRO ESG report with circular economy and EU Taxonomy focus",
+  "key_topics": [
+    "Circular economy initiatives",
+    "EU Taxonomy alignment",
+    "Climate transition support",
+    "Social impact initiatives",
+    "Risk management"
+  ],
+  "esg_scores": {
+    "environmental": 0.79,
+    "social": 0.81,
+    "governance": 0.89,
+    "overall": 0.83
+  },
+  "compliance_frameworks": [
+    "CSRD",
+    "TCFD",
+    "GRI",
+    "EU Taxonomy",
+    "SFDR"
+  ],
+  "file_size": "text",
+  "created_date": "2024-12-08",
+  "demo_purpose": true
+} 
