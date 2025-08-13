@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block title %}ESG Reports - ESG Copilot{% endblock %}
+
+{% block content %}
+<div x-data="reportsPage()" x-init="loadReportsData()">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">ESG Reports</h1>
+        <p class="text-gray-600">Comprehensive ESG analysis reports for Dutch banks</p>
+    </div>
+
+    <!-- Bank Selection and Filters -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Bank</label>
+                <select x-model="selectedBank" @change="loadBankReports()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <option value="">All Banks</option>
+                    <option value="IG">IG - ING Group</option>
+                    <option value="RB">RB - Rabobank</option>
+                    <option value="AB">AB - ABN AMRO</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                <select x-model="selectedType" @change="filterReports()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <option value="">All Types</option>
+                    <option value="CSRD">CSRD Analysis</option>
+                    <option value="EU_Taxonomy">EU Taxonomy</option>
+                    <option value="Climate_Risk">Climate Risk</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                <select x-model="selectedYear" @change="filterReports()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <option value="">All Years</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button @click="generateNewReport()" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+        <template x-for="report in filteredReports" :key="report.id">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold mr-3"
+                                 :class="getBankColor(report.bank)">
+                                <span x-text="report.bank"></span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900" x-text="getBankName(report.bank)"></h3>
+                                <p class="text-sm text-gray-500" x-text="report.document_type"></p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full font-medium"
+                              :class="getStatusColor(report.status)" x-text="report.status"></span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">ESG Score:</span>
+                            <span class="font-medium" :class="getScoreColor(report.esg_score)" x-text="formatPercentage(report.esg_score)"></span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Compliance Rate:</span>
+                            <span class="font-medium" :class="getScoreColor(report.compliance_rate)" x-text="formatPercentage(report.compliance_rate)"></span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Generated:</span>
+                            <span class="text-gray-900" x-text="formatDate(report.created_at)"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex space-x-2">
+                        <button @click="viewReport(report)" class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            View Report
+                        </button>
+                        <button @click="downloadReport(report)" class="px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Report Details Modal -->
+    <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeModal()"></div>
+            
+            <!-- Modal content -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between pb-4 mb-4 border-b">
+                        <h2 class="text-2xl font-bold text-gray-900" x-text="selectedReport?.bank + ' ESG Report'"></h2>
+                        <button @click="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Modal Body -->
+                    <div x-show="selectedReport" class="max-h-96 overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Summary Section -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Summary</h3>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Bank:</span>
+                                        <span class="font-medium" x-text="getBankName(selectedReport?.bank)"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Document Type:</span>
+                                        <span class="font-medium" x-text="selectedReport?.document_type"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Year:</span>
+                                        <span class="font-medium" x-text="selectedReport?.year"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Status:</span>
+                                        <span class="px-2 py-1 text-xs rounded-full font-medium"
+                                              :class="getStatusColor(selectedReport?.status)" x-text="selectedReport?.status"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Scores Section -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">ESG Scores</h3>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Overall ESG:</span>
+                                        <span class="font-bold text-lg" :class="getScoreColor(selectedReport?.esg_score)" x-text="formatPercentage(selectedReport?.esg_score)"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Environmental:</span>
+                                        <span class="font-medium" :class="getScoreColor(selectedReport?.environmental_score)" x-text="formatPercentage(selectedReport?.environmental_score)"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Social:</span>
+                                        <span class="font-medium" :class="getScoreColor(selectedReport?.social_score)" x-text="formatPercentage(selectedReport?.social_score)"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Governance:</span>
+                                        <span class="font-medium" :class="getScoreColor(selectedReport?.governance_score)" x-text="formatPercentage(selectedReport?.governance_score)"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Analysis Details -->
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Analysis Details</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <p class="text-gray-700" x-text="selectedReport?.analysis_summary || 'Analysis summary not available'"></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Recommendations -->
+                        <div class="mt-6" x-show="selectedReport?.recommendations">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Recommendations</h3>
+                            <ul class="space-y-2">
+                                <template x-for="(recommendation, index) in selectedReport?.recommendations || []" :key="index">
+                                    <li class="flex items-start">
+                                        <span class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></span>
+                                        <span class="text-gray-700" x-text="recommendation"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button @click="downloadReport(selectedReport)" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Download Report
+                    </button>
+                    <button @click="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div x-show="loading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-lg p-6 flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-gray-700">Loading reports...</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function reportsPage() {
+    return {
+        loading: false,
+        showModal: false,
+        selectedBank: '',
+        selectedType: '',
+        selectedYear: '',
+        reports: [],
+        filteredReports: [],
+        selectedReport: null,
+
+        async loadReportsData() {
+            this.loading = true;
+            try {
+                const response = await fetch('/api/reports');
+                if (response.ok) {
+                    this.reports = await response.json();
+                } else {
+                    console.warn('Failed to load reports from API, using mock data');
+                    this.reports = this.generateMockReports();
+                }
+                this.filteredReports = this.reports;
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                this.reports = this.generateMockReports();
+                this.filteredReports = this.reports;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async loadBankReports() {
+            if (!this.selectedBank) {
+                this.filteredReports = this.reports;
+                return;
+            }
+            
+            this.loading = true;
+            try {
+                const response = await fetch(`/api/bank/${this.selectedBank}`);
+                if (response.ok) {
+                    const bankData = await response.json();
+                    this.filteredReports = this.reports.filter(r => r.bank === this.selectedBank);
+                } else {
+                    console.warn('Failed to load bank data from API');
+                    this.filterReports();
+                }
+            } catch (error) {
+                console.error('Error loading bank reports:', error);
+                this.filterReports();
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        filterReports() {
+            this.filteredReports = this.reports.filter(report => {
+                const bankMatch = !this.selectedBank || report.bank === this.selectedBank;
+                const typeMatch = !this.selectedType || report.document_type === this.selectedType;
+                const yearMatch = !this.selectedYear || report.year.toString() === this.selectedYear;
+                return bankMatch && typeMatch && yearMatch;
+            });
+        },
+
+        generateMockReports() {
+            return [
+                {
+                    id: 1,
+                    bank: 'IG',
+                    document_type: 'CSRD',
+                    year: 2024,
+                    status: 'Completed',
+                    esg_score: 0.82,
+                    compliance_rate: 0.85,
+                    environmental_score: 0.80,
+                    social_score: 0.85,
+                    governance_score: 0.81,
+                    created_at: '2024-01-15T10:30:00Z',
+                    analysis_summary: 'Comprehensive CSRD analysis showing strong performance in social and governance areas.',
+                    recommendations: [
+                        'Improve climate risk disclosure transparency',
+                        'Enhance biodiversity impact reporting',
+                        'Strengthen supply chain ESG monitoring'
+                    ]
+                },
+                {
+                    id: 2,
+                    bank: 'RB',
+                    document_type: 'EU_Taxonomy',
+                    year: 2024,
+                    status: 'Completed',
+                    esg_score: 0.78,
+                    compliance_rate: 0.82,
+                    environmental_score: 0.85,
+                    social_score: 0.75,
+                    governance_score: 0.74,
+                    created_at: '2024-01-14T14:20:00Z',
+                    analysis_summary: 'EU Taxonomy alignment analysis revealing good environmental performance.',
+                    recommendations: [
+                        'Increase sustainable finance portfolio',
+                        'Improve governance framework alignment',
+                        'Enhance social impact measurement'
+                    ]
+                },
+                {
+                    id: 3,
+                    bank: 'AB',
+                    document_type: 'Climate_Risk',
+                    year: 2024,
+                    status: 'In Progress',
+                    esg_score: 0.75,
+                    compliance_rate: 0.79,
+                    environmental_score: 0.72,
+                    social_score: 0.78,
+                    governance_score: 0.76,
+                    created_at: '2024-01-13T09:15:00Z',
+                    analysis_summary: 'Climate risk assessment in progress with preliminary findings.',
+                    recommendations: [
+                        'Enhance physical risk modeling',
+                        'Improve transition risk scenario analysis',
+                        'Strengthen climate governance structure'
+                    ]
+                }
+            ];
+        },
+
+        viewReport(report) {
+            this.selectedReport = report;
+            this.showModal = true;
+        },
+
+        closeModal() {
+            this.showModal = false;
+            this.selectedReport = null;
+        },
+
+        async downloadReport(report) {
+            try {
+                const response = await fetch(`/api/reports/${report.id}/download`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${report.bank}_${report.document_type}_${report.year}_Report.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    showNotification('Report downloaded successfully', 'success');
+                } else {
+                    showNotification('Download failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                showNotification('Download failed. Please try again.', 'error');
+            }
+        },
+
+        async generateNewReport() {
+            if (!this.selectedBank) {
+                showNotification('Please select a bank first', 'warning');
+                return;
+            }
+            
+            this.loading = true;
+            try {
+                const response = await fetch(`/api/reports/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bank: this.selectedBank,
+                        document_type: this.selectedType || 'CSRD',
+                        year: parseInt(this.selectedYear) || new Date().getFullYear()
+                    })
+                });
+                
+                if (response.ok) {
+                    showNotification('Report generation started', 'success');
+                    await this.loadReportsData();
+                } else {
+                    showNotification('Failed to generate report', 'error');
+                }
+            } catch (error) {
+                console.error('Generate report error:', error);
+                showNotification('Failed to generate report', 'error');
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        getBankName(code) {
+            const names = {
+                'IG': 'ING Group',
+                'RB': 'Rabobank',
+                'AB': 'ABN AMRO'
+            };
+            return names[code] || code;
+        },
+
+        getBankColor(bank) {
+            const colors = {
+                'IG': 'bg-orange-500',
+                'RB': 'bg-blue-500',
+                'AB': 'bg-green-500'
+            };
+            return colors[bank] || 'bg-gray-500';
+        },
+
+        getStatusColor(status) {
+            const colors = {
+                'Completed': 'bg-green-100 text-green-800',
+                'In Progress': 'bg-yellow-100 text-yellow-800',
+                'Failed': 'bg-red-100 text-red-800',
+                'Pending': 'bg-gray-100 text-gray-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        },
+
+        getScoreColor(score) {
+            if (score >= 0.8) return 'text-green-600';
+            if (score >= 0.6) return 'text-yellow-600';
+            return 'text-red-600';
+        },
+
+        formatPercentage(value) {
+            return `${(value * 100).toFixed(1)}%`;
+        },
+
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    }
+}
+</script>
+{% endblock %}
