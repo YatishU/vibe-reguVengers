@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ESG Copilot - Dutch Banks ESG Compliance Assistant{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/@heroicons/react@2.0.18/24/outline/esm/index.js"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'esg-green': '#10B981',
+                        'esg-blue': '#3B82F6',
+                        'esg-orange': '#F59E0B',
+                        'esg-red': '#EF4444',
+                        'esg-purple': '#8B5CF6',
+                        'esg-teal': '#14B8A6',
+                        'esg-indigo': '#6366F1',
+                        'esg-pink': '#EC4899',
+                        'esg-yellow': '#EAB308',
+                        'esg-gray': '#6B7280',
+                        'esg-slate': '#475569',
+                        'esg-zinc': '#71717A',
+                        'esg-neutral': '#737373',
+                        'esg-stone': '#78716C',
+                        'esg-red-light': '#FEE2E2',
+                        'esg-orange-light': '#FEF3C7',
+                        'esg-yellow-light': '#FEFCE8',
+                        'esg-green-light': '#D1FAE5',
+                        'esg-blue-light': '#DBEAFE',
+                        'esg-purple-light': '#EDE9FE',
+                        'esg-pink-light': '#FCE7F3',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'display': ['Poppins', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .esg-gradient {
+            background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1F2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-compliant { background-color: #10B981; }
+        .status-partial { background-color: #F59E0B; }
+        .status-non-compliant { background-color: #EF4444; }
+        .status-unknown { background-color: #6B7280; }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .trend-up {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .trend-down {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .trend-stable {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-esg-green rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <span class="ml-3 text-xl font-bold text-gray-900">ESG Copilot</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-esg-green px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        Dashboard
+                    </a>
+                    <a href="/upload" class="text-gray-700 hover:text-esg-green px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        Upload
+                    </a>
+                    <a href="/test-cases" class="text-gray-700 hover:text-esg-green px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        Test Cases
+                    </a>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-esg-green rounded-full"></div>
+                        <span class="text-sm text-gray-600">Live</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">ESG Copilot</h3>
+                    <p class="text-gray-600 text-sm">
+                        AI-powered ESG compliance, risk detection, and sustainability framework alignment for Dutch banks.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Features</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>CSRD Compliance Analysis</li>
+                        <li>EU Taxonomy Validation</li>
+                        <li>Climate Risk Assessment</li>
+                        <li>ESG Drift Detection</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Banks Supported</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>ING Group (IG)</li>
+                        <li>Rabobank (RB)</li>
+                        <li>ABN AMRO (AB)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <p class="text-center text-sm text-gray-600">
+                    © 2024 ESG Copilot. Built for Dutch Banking ESG Compliance.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Global utility functions
+        window.ESGUtils = {
+            formatNumber: function(num) {
+                return new Intl.NumberFormat().format(num);
+            },
+            
+            formatPercentage: function(num) {
+                return num.toFixed(1) + '%';
+            },
+            
+            getStatusColor: function(status) {
+                const colors = {
+                    'compliant': 'text-esg-green',
+                    'partially_compliant': 'text-esg-orange',
+                    'non_compliant': 'text-esg-red',
+                    'not_assessed': 'text-esg-gray'
+                };
+                return colors[status] || 'text-esg-gray';
+            },
+            
+            getStatusBgColor: function(status) {
+                const colors = {
+                    'compliant': 'bg-esg-green-light',
+                    'partially_compliant': 'bg-esg-orange-light',
+                    'non_compliant': 'bg-esg-red-light',
+                    'not_assessed': 'bg-esg-gray-light'
+                };
+                return colors[status] || 'bg-esg-gray-light';
+            },
+            
+            animateValue: function(element, start, end, duration) {
+                const range = end - start;
+                const increment = range / (duration / 16);
+                let current = start;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                        current = end;
+                        clearInterval(timer);
+                    }
+                    element.textContent = current.toFixed(1);
+                }, 16);
+            }
+        };
+        
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add any initialization code here
+            console.log('ESG Copilot initialized');
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

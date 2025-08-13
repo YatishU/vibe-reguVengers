@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}ESG Copilot - Upload Documents{% endblock %}
+
+{% block content %}
+<!-- Upload Header -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Upload ESG Documents</h1>
+        <p class="text-gray-600">Upload your ESG reports for comprehensive AI-powered analysis</p>
+    </div>
+</div>
+
+<!-- Upload Form -->
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <form id="uploadForm" enctype="multipart/form-data" class="space-y-6">
+            <!-- Bank Selection -->
+            <div>
+                <label for="bank_code" class="block text-sm font-medium text-gray-700 mb-2">
+                    Select Bank
+                </label>
+                <select id="bank_code" name="bank_code" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-esg-green focus:border-esg-green">
+                    <option value="">Choose a bank...</option>
+                    <option value="IG">ING Group (IG)</option>
+                    <option value="RB">Rabobank (RB)</option>
+                    <option value="AB">ABN AMRO (AB)</option>
+                </select>
+            </div>
+
+            <!-- Document Type Selection -->
+            <div>
+                <label for="document_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    Document Type
+                </label>
+                <select id="document_type" name="document_type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-esg-green focus:border-esg-green">
+                    <option value="">Select document type...</option>
+                    <option value="csrd_double_materiality">CSRD Double Materiality Assessment Report</option>
+                    <option value="eu_taxonomy_alignment">EU Taxonomy Alignment Disclosure</option>
+                    <option value="climate_risk_stress_test">Climate Risk Stress Test Report</option>
+                </select>
+            </div>
+
+            <!-- File Upload -->
+            <div>
+                <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Document (PDF)
+                </label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-esg-green transition-colors">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="text-sm text-gray-600">
+                        <label for="file" class="relative cursor-pointer bg-white rounded-md font-medium text-esg-green hover:text-esg-green/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-esg-green">
+                            <span>Upload a file</span>
+                            <input id="file" name="file" type="file" accept=".pdf" class="sr-only" required>
+                        </label>
+                        <p class="pl-1">or drag and drop</p>
+                    </div>
+                    <p class="text-xs text-gray-500">PDF up to 10MB</p>
+                </div>
+                <div id="fileInfo" class="mt-2 text-sm text-gray-600 hidden">
+                    <span id="fileName"></span> (<span id="fileSize"></span>)
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit" class="bg-esg-green text-white px-6 py-3 rounded-lg font-medium hover:bg-esg-green/90 transition-colors flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Analyze Document
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Upload Progress -->
+    <div id="uploadProgress" class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Analysis Progress</h3>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Uploading document...</span>
+                <div class="w-6 h-6 bg-esg-green rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Parsing document content...</span>
+                <div class="w-6 h-6 bg-esg-green rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Running ESG analysis...</span>
+                <div class="loading-spinner"></div>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Generating insights...</span>
+                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="analysisResults" class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Analysis Results</h3>
+        <div id="resultsContent" class="space-y-4">
+            <!-- Results will be populated here -->
+        </div>
+        <div class="mt-6 flex justify-end">
+            <a href="/dashboard" class="bg-esg-green text-white px-6 py-3 rounded-lg font-medium hover:bg-esg-green/90 transition-colors">
+                View Full Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Document Types Info -->
+<div class="max-w-4xl mx-auto mt-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Supported Document Types</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-esg-green-light rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-esg-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">CSRD Double Materiality</h3>
+            <p class="text-gray-600 text-sm mb-4">
+                Corporate Sustainability Reporting Directive double materiality assessment reports covering impact and financial materiality.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Impact materiality analysis</li>
+                <li>• Financial materiality assessment</li>
+                <li>• Stakeholder engagement process</li>
+                <li>• Value chain analysis</li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-esg-blue-light rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-esg-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">EU Taxonomy Alignment</h3>
+            <p class="text-gray-600 text-sm mb-4">
+                European Union Taxonomy alignment disclosures showing sustainable economic activities and technical screening criteria.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Technical screening criteria</li>
+                <li>• Sustainable activities classification</li>
+                <li>• Climate objectives alignment</li>
+                <li>• Green investment opportunities</li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-esg-orange-light rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-esg-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Climate Risk Stress Test</h3>
+            <p class="text-gray-600 text-sm mb-4">
+                Climate risk stress test reports following TCFD framework with scenario analysis and risk assessment.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• TCFD framework compliance</li>
+                <li>• Scenario analysis coverage</li>
+                <li>• Transition risk assessment</li>
+                <li>• Physical risk evaluation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('file');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const analysisResults = document.getElementById('analysisResults');
+    const resultsContent = document.getElementById('resultsContent');
+
+    // File selection handler
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            fileInfo.classList.remove('hidden');
+        } else {
+            fileInfo.classList.add('hidden');
+        }
+    });
+
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        
+        // Show progress
+        uploadProgress.classList.remove('hidden');
+        analysisResults.classList.add('hidden');
+        
+        // Simulate upload and analysis
+        setTimeout(() => {
+            uploadProgress.classList.add('hidden');
+            analysisResults.classList.remove('hidden');
+            
+            // Populate results
+            resultsContent.innerHTML = `
+                <div class="bg-esg-green-light border border-esg-green rounded-lg p-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-esg-green mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="font-medium text-esg-green">Document analyzed successfully!</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Compliance Score</h4>
+                        <div class="text-2xl font-bold text-esg-green">78.5%</div>
+                        <p class="text-sm text-gray-600">Overall compliance with ESG regulations</p>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Risk Level</h4>
+                        <div class="text-2xl font-bold text-esg-orange">Medium</div>
+                        <p class="text-sm text-gray-600">Identified ESG risks and concerns</p>
+                    </div>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-900 mb-2">Key Findings</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Strong stakeholder engagement framework</li>
+                        <li>• Comprehensive climate risk assessment</li>
+                        <li>• Areas for improvement in biodiversity reporting</li>
+                        <li>• Enhanced social impact measurement needed</li>
+                    </ul>
+                </div>
+            `;
+        }, 3000);
+    });
+
+    // Drag and drop functionality
+    const dropZone = document.querySelector('.border-dashed');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('border-esg-green');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('border-esg-green');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        
+        const file = files[0];
+        if (file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            fileInfo.classList.remove('hidden');
+        }
+    }
+});
+</script>
+{% endblock %} 

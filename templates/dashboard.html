@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}ESG Copilot - Comprehensive Dashboard{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">ESG Analysis Dashboard</h1>
+            <p class="text-gray-600">Comprehensive ESG compliance and risk analysis for Dutch banks</p>
+        </div>
+        <div class="flex items-center space-x-4 mt-4 md:mt-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-esg-green rounded-full"></div>
+                <span class="text-sm text-gray-600">Live Data</span>
+            </div>
+            <button class="bg-esg-green text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-esg-green/90 transition-colors">
+                Export Report
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ESG Score Overview -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    {% for bank_code, bank_info in banks.items() %}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-esg-green rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold">{{ bank_code }}</span>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-semibold text-gray-900">{{ bank_info.name }}</h3>
+                    <p class="text-sm text-gray-600">{{ bank_info.full_name }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mb-6">
+            <div class="relative inline-block">
+                <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
+                    <path class="text-gray-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <path class="text-esg-green" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="{{ bank_info.esg_score }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-2xl font-bold text-gray-900">{{ bank_info.esg_score }}</span>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">ESG Score</p>
+        </div>
+        
+        <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Environmental:</span>
+                <span class="font-medium">{{ analysis_results[bank_code].esg_scoring.environmental_score }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Social:</span>
+                <span class="font-medium">{{ analysis_results[bank_code].esg_scoring.social_score }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Governance:</span>
+                <span class="font-medium">{{ analysis_results[bank_code].esg_scoring.governance_score }}</span>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="/analysis/{{ bank_code }}" class="w-full bg-esg-green text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-esg-green/90 transition-colors block text-center">
+                View Details
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- ESG Scores Comparison Chart -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">ESG Scores Comparison</h3>
+        <p class="text-sm text-gray-600 mb-4">Comparative ESG performance across all three banks</p>
+        <div class="chart-container">
+            <canvas id="esgComparisonChart"></canvas>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">This chart shows the overall ESG scores for each bank, highlighting performance differences and areas for improvement.</p>
+    </div>
+    
+    <!-- Compliance Heatmap -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Compliance Status</h3>
+        <p class="text-sm text-gray-600 mb-4">Regulatory compliance across different ESG areas</p>
+        <div class="space-y-3">
+            {% for bank_code, bank_info in banks.items() %}
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="font-medium text-gray-900">{{ bank_info.name }}</h4>
+                    <span class="text-sm text-gray-600">{{ analysis_results[bank_code].csrd_analysis.compliance_status }}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="text-center">
+                        <div class="w-8 h-8 bg-esg-green-light rounded-lg flex items-center justify-center mx-auto mb-1">
+                            <span class="text-xs font-medium text-esg-green">{{ analysis_results[bank_code].csrd_analysis.impact_materiality_score }}</span>
+                        </div>
+                        <span class="text-xs text-gray-600">Impact</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-8 h-8 bg-esg-blue-light rounded-lg flex items-center justify-center mx-auto mb-1">
+                            <span class="text-xs font-medium text-esg-blue">{{ analysis_results[bank_code].taxonomy_validation.alignment_score }}</span>
+                        </div>
+                        <span class="text-xs text-gray-600">Taxonomy</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-8 h-8 bg-esg-orange-light rounded-lg flex items-center justify-center mx-auto mb-1">
+                            <span class="text-xs font-medium text-esg-orange">{{ analysis_results[bank_code].climate_risk.tcfd_compliance_score }}</span>
+                        </div>
+                        <span class="text-xs text-gray-600">Climate</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="text-xs text-gray-500 mt-2">This heatmap displays compliance scores across different ESG dimensions for each bank.</p>
+    </div>
+</div>
+
+<!-- Risk Analysis Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Risk Distribution -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Risk Distribution</h3>
+        <p class="text-sm text-gray-600 mb-4">ESG risk exposure across different categories</p>
+        <div class="chart-container">
+            <canvas id="riskDistributionChart"></canvas>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">This chart shows the distribution of ESG risks across different severity levels for each bank.</p>
+    </div>
+    
+    <!-- Climate Risk Exposure -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Climate Risk Exposure</h3>
+        <p class="text-sm text-gray-600 mb-4">Climate-related risk assessment and exposure levels</p>
+        <div class="space-y-4">
+            {% for bank_code, bank_info in banks.items() %}
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium text-gray-900">{{ bank_info.name }}</span>
+                    <span class="text-sm font-medium text-esg-orange">{{ analysis_results[bank_code].climate_risk.tcfd_compliance_score }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-esg-orange h-2 rounded-full" style="width: {{ analysis_results[bank_code].climate_risk.tcfd_compliance_score }}%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-600 mt-1">
+                    <span>Low Risk</span>
+                    <span>High Risk</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="text-xs text-gray-500 mt-2">This visualization shows climate risk exposure levels based on TCFD compliance scores.</p>
+    </div>
+</div>
+
+<!-- SDG Progress Section -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">UN SDG Progress</h3>
+    <p class="text-sm text-gray-600 mb-6">Alignment with United Nations Sustainable Development Goals</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {% for bank_code, bank_info in banks.items() %}
+        <div class="border border-gray-200 rounded-lg p-4">
+            <h4 class="font-medium text-gray-900 mb-3">{{ bank_info.name }}</h4>
+            <div class="space-y-2">
+                {% for sdg, score in analysis_results[bank_code].vision_2030.sdg_mapping.items() %}
+                {% if loop.index <= 4 %}
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-600">{{ sdg }}</span>
+                    <div class="flex items-center">
+                        <div class="w-12 h-2 bg-gray-200 rounded-full mr-2">
+                            <div class="h-2 bg-esg-green rounded-full" style="width: {{ score }}%"></div>
+                        </div>
+                        <span class="text-xs font-medium">{{ score }}%</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <p class="text-xs text-gray-500 mt-4">This section shows the progress of each bank towards achieving UN Sustainable Development Goals.</p>
+</div>
+
+<!-- Key Insights Section -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Key Insights & Recommendations</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- CSRD Insights -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-esg-green-light rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-esg-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h4 class="font-medium text-gray-900">CSRD Compliance</h4>
+            </div>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Enhanced double materiality assessment needed</li>
+                <li>• Stakeholder engagement framework improvements</li>
+                <li>• Forward-looking information disclosure gaps</li>
+            </ul>
+        </div>
+        
+        <!-- Taxonomy Insights -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-esg-blue-light rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-esg-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                    </svg>
+                </div>
+                <h4 class="font-medium text-gray-900">EU Taxonomy</h4>
+            </div>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Technical screening criteria alignment</li>
+                <li>• Green investment portfolio expansion</li>
+                <li>• SFDR disclosure enhancements</li>
+            </ul>
+        </div>
+        
+        <!-- Climate Risk Insights -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-esg-orange-light rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-esg-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                    </svg>
+                </div>
+                <h4 class="font-medium text-gray-900">Climate Risk</h4>
+            </div>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• TCFD framework implementation</li>
+                <li>• Scenario analysis enhancement</li>
+                <li>• Physical risk assessment</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Action Items -->
+<div class="bg-gradient-to-r from-esg-green to-esg-blue text-white rounded-xl p-6">
+    <h3 class="text-xl font-semibold mb-4">Next Steps</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white/10 rounded-lg p-4">
+            <h4 class="font-medium mb-2">Upload Documents</h4>
+            <p class="text-sm opacity-90 mb-3">Upload your ESG reports for comprehensive analysis</p>
+            <a href="/upload" class="bg-white text-esg-green px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors inline-block">
+                Get Started
+            </a>
+        </div>
+        <div class="bg-white/10 rounded-lg p-4">
+            <h4 class="font-medium mb-2">View Test Cases</h4>
+            <p class="text-sm opacity-90 mb-3">Review BDD test cases for comprehensive testing</p>
+            <a href="/test-cases" class="bg-white text-esg-green px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors inline-block">
+                View Tests
+            </a>
+        </div>
+        <div class="bg-white/10 rounded-lg p-4">
+            <h4 class="font-medium mb-2">Generate Report</h4>
+            <p class="text-sm opacity-90 mb-3">Export comprehensive ESG analysis report</p>
+            <button class="bg-white text-esg-green px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                Export PDF
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ESG Comparison Chart
+    const esgCtx = document.getElementById('esgComparisonChart').getContext('2d');
+    new Chart(esgCtx, {
+        type: 'bar',
+        data: {
+            labels: ['ING Group', 'Rabobank', 'ABN AMRO'],
+            datasets: [{
+                label: 'ESG Score',
+                data: [78.5, 82.3, 75.8],
+                backgroundColor: ['#10B981', '#3B82F6', '#F59E0B'],
+                borderColor: ['#059669', '#2563EB', '#D97706'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // Risk Distribution Chart
+    const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+    new Chart(riskCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Low Risk', 'Medium Risk', 'High Risk', 'Critical Risk'],
+            datasets: [{
+                data: [12, 8, 5, 2],
+                backgroundColor: ['#10B981', '#F59E0B', '#EF4444', '#7C2D12'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.card-hover');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %} 
