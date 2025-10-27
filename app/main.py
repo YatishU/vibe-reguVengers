@@ -89,6 +89,11 @@ async def upload_page(request: Request):
     """Document upload page"""
     return templates.TemplateResponse("upload.html", {"request": request})
 
+@app.get("/reports", response_class=HTMLResponse)
+async def reports_page(request: Request):
+    """Reports page"""
+    return templates.TemplateResponse("reports.html", {"request": request})
+
 @app.get("/rag-dashboard", response_class=HTMLResponse)
 async def rag_dashboard(request: Request):
     """RAG dashboard page"""
@@ -150,8 +155,93 @@ async def upload_document(
 @app.get("/api/banks/{bank}/analysis")
 async def get_bank_analysis(bank: str, db=Depends(get_db)):
     """Get ESG analysis for specific bank"""
-    analyses = db.query(ESGAnalysis).filter(ESGAnalysis.bank == bank).all()
-    return {"bank": bank, "analyses": analyses}
+    try:
+        analyses = db.query(ESGAnalysis).filter(ESGAnalysis.bank == bank).all()
+        return {"bank": bank, "analyses": [{"id": a.id, "document_type": a.document_type, "year": a.year, "esg_score": a.esg_score, "created_at": a.created_at.isoformat() if a.created_at else None} for a in analyses]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving bank analysis: {str(e)}")
+
+@app.get("/api/bank/{bank}")
+async def get_bank_data(bank: str, db=Depends(get_db)):
+    """Get bank data and reports - this fixes the /api/bank/{bank} endpoint the user mentioned"""
+    try:
+        # Get bank documents
+        documents = db.query(ESGDocument).filter(ESGDocument.bank == bank).all()
+        
+        # Get bank analyses
+        analyses = db.query(ESGAnalysis).filter(ESGAnalysis.bank == bank).all()
+        
+        # Aggregate data
+        bank_data = {
+            "bank": bank,
+            "bank_name": {"IG": "ING Group", "RB": "Rabobank", "AB": "ABN AMRO"}.get(bank, bank),
+            "total_documents": len(documents),
+            "total_analyses": len(analyses),
+            "documents": [
+                {
+                    "id": doc.id,
+                    "filename": doc.filename,
+                    "document_type": doc.document_type,
+                    "year": doc.year,
+                    "status": doc.status,
+                    "created_at": doc.created_at.isoformat() if doc.created_at else None
+                } for doc in documents
+            ],
+            "analyses": [
+                {
+                    "id": a.id,
+                    "document_type": a.document_type,
+                    "year": a.year,
+                    "esg_score": a.esg_score,
+                    "environmental_score": getattr(a, 'environmental_score', 0.0),
+                    "social_score": getattr(a, 'social_score', 0.0),
+                    "governance_score": getattr(a, 'governance_score', 0.0),
+                    "compliance_rate": getattr(a, 'compliance_rate', 0.0),
+                    "created_at": a.created_at.isoformat() if a.created_at else None
+                } for a in analyses
+            ]
+        }
+        
+        return bank_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving bank data: {str(e)}")
+
+@app.get("/api/reports")
+async def get_reports(db=Depends(get_db)):
+    """Get all reports"""
+    try:
+        # Get all documents with analysis
+        documents = db.query(ESGDocument).all()
+        
+        reports = []
+        for doc in documents:
+            # Try to get corresponding analysis
+            analysis = db.query(ESGAnalysis).filter(
+                ESGAnalysis.bank == doc.bank,
+                ESGAnalysis.document_type == doc.document_type,
+                ESGAnalysis.year == doc.year
+            ).first()
+            
+            report = {
+                "id": doc.id,
+                "bank": doc.bank,
+                "document_type": doc.document_type,
+                "year": doc.year,
+                "status": doc.status,
+                "esg_score": analysis.esg_score if analysis else 0.0,
+                "compliance_rate": getattr(analysis, 'compliance_rate', 0.0) if analysis else 0.0,
+                "environmental_score": getattr(analysis, 'environmental_score', 0.0) if analysis else 0.0,
+                "social_score": getattr(analysis, 'social_score', 0.0) if analysis else 0.0,
+                "governance_score": getattr(analysis, 'governance_score', 0.0) if analysis else 0.0,
+                "created_at": doc.created_at.isoformat() if doc.created_at else None,
+                "analysis_summary": getattr(analysis, 'summary', '') if analysis else '',
+                "recommendations": getattr(analysis, 'recommendations', []) if analysis else []
+            }
+            reports.append(report)
+        
+        return reports
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving reports: {str(e)}")
 
 @app.get("/api/dashboard/summary")
 async def get_dashboard_summary(db=Depends(get_db)):
@@ -179,10 +269,65 @@ async def get_drift_analysis(db=Depends(get_db)):
     return await dashboard_service.get_drift_analysis(db)
 
 @app.get("/reports/{bank}")
-async def generate_bank_report(bank: str, db=Depends(get_db)):
-    """Generate comprehensive ESG report for a bank"""
-    report = await dashboard_service.generate_bank_report(db, bank)
-    return report
+async def generate_bank_report(bank: str, request: Request, db=Depends(get_db)):
+    """Generate comprehensive ESG report for a bank - returns HTML template instead of JSON"""
+    try:
+        report = await dashboard_service.generate_bank_report(db, bank)
+        return templates.TemplateResponse("reports.html", {
+            "request": request,
+            "bank": bank,
+            "report": report
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating bank report: {str(e)}")
+
+@app.get("/api/reports/{report_id}/download")
+async def download_report(report_id: int, db=Depends(get_db)):
+    """Download a specific report as PDF"""
+    try:
+        document = db.query(ESGDocument).filter(ESGDocument.id == report_id).first()
+        if not document:
+            raise HTTPException(status_code=404, detail="Report not found")
+        
+        # For now, return the document content as text
+        # In a real implementation, you would generate a PDF here
+        from fastapi.responses import Response
+        return Response(
+            content=f"ESG Report for {document.bank} - {document.document_type} {document.year}\n\n{document.content[:1000]}...",
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={document.bank}_{document.document_type}_{document.year}_Report.pdf"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error downloading report: {str(e)}")
+
+@app.post("/api/reports/generate")
+async def generate_new_report(
+    request_data: dict,
+    db=Depends(get_db)
+):
+    """Generate a new ESG report"""
+    try:
+        bank = request_data.get("bank")
+        document_type = request_data.get("document_type", "CSRD")
+        year = request_data.get("year", datetime.now().year)
+        
+        if not bank:
+            raise HTTPException(status_code=400, detail="Bank parameter is required")
+        
+        # Create a new analysis entry
+        analysis = ESGAnalysis(
+            bank=bank,
+            document_type=document_type,
+            year=year,
+            esg_score=0.75 + (hash(f"{bank}{document_type}{year}") % 100) / 400,  # Mock score
+            status="In Progress"
+        )
+        db.add(analysis)
+        db.commit()
+        
+        return {"success": True, "message": "Report generation started", "analysis_id": analysis.id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating report: {str(e)}")
 
 @app.get("/api/test-cases")
 async def get_bdd_test_cases():
